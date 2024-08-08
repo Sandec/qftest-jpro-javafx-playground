@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE RootStep>
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="7.1.5">
+<include>qfs.qft</include>
+<variable name="webmode">CDP-Driver only</variable>
+<variable name="url">http://localhost:8080</variable>
+<variable name="browser">edge</variable>
+<variable name="JProServerStartupMessage">Listening for HTTP on</variable>
+<variable name="client">JProServer</variable>
+<DependencyReference id="_2YLC" reference="dependencies.JProDemoGestartet"/>
+<TestSet id="_1" name="Base Test Group">
+<DataDriver id="_2YZg">
+<TableDataBinder id="_2YZh" name="Browsers">
+<TableBinderColumn title="browser" width="741">
+<data>chrome</data>
+<data>edge</data>
+<data>edge</data>
+<data>chrome</data>
+</TableBinderColumn>
+<TableBinderColumn title="os" width="64">
+<data>mac</data>
+<data>mac</data>
+<data>windows</data>
+<data>windows</data>
+</TableBinderColumn>
+</TableDataBinder>
+</DataDriver>
+<TestSet condition="$(os) == ${qftest:os.name}" id="_2YZk" name="TheTests">
+<TestCase id="_2YXt" name="Click Button and test">
+<BasicSequence id="_2YXu" name="Setze Event-Optionen">
+<ProcedureCall id="_2YXv" procedure="qfs.jib.options.replayFXHardMouseEventAs">
+<variable name="clicktype">hard</variable>
+</ProcedureCall>
+<ProcedureCall id="_2YXw" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
+<variable name="clicktype">semihard</variable>
+</ProcedureCall>
+</BasicSequence>
+<MouseEventStep clicks="1" client="JProServer" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_2YXx" modifiers="16" x="26" y="19"/>
+<MouseEventStep clicks="1" client="JProServer" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_2YXy" modifiers="16"/>
+<CheckStringStep client="JProServer" component="#Label:name=label1" id="_2YXz">
+<text>Welcome to FXML and JPro!</text>
+</CheckStringStep>
+</TestCase>
+<TestCase disabled="true" id="_2YWm" name="Recorded Test">
+<BasicSequence id="_2YWn" name="Clicks">
+<MouseEventStep clicks="1" client="$(webClient)" component="#Link:text=FXML" event="MOUSE_MPRC" id="_2YWo" modifiers="16"/>
+<ComponentEventStep client="jproServer" component="win" event="COMPONENT_RESIZED" id="_2YWq" param1="1024" param2="142"/>
+<CommentStep id="_2YWr">
+<heading>JPro application detected - see comment</heading>
+<comment>Apparently you are recording events for an application based on JPro.
+
+In the current setup QF-Test "sees" only the browser and this view is very limited.
+By setting up an integrated test for the Java application and the browser,
+testing can be taken to a much higher level.
+
+Please see manual chapter 18
+"Testing Java desktop applications in a browser with Webswing and JPro"
+for further information.</comment>
+</CommentStep>
+<MouseEventStep clicks="1" client="jproServer" component="#Button:name=button" event="MOUSE_MPRC" id="_2YWs" modifiers="16"/>
+<MouseEventStep clicks="1" client="$(webClient)" component="localhost:8080.div" event="MOUSE_MPRC" id="_2YWt" modifiers="16" x="32" y="9"/>
+<CheckStringStep client="$(webClient)" component="localhost:8080.div2" id="_2YWz">
+<text>Welcome to FXML and JPro!wrong</text>
+</CheckStringStep>
+</BasicSequence>
+</TestCase>
+<TestCase disabled="true" id="_2YWA" name="Click Button and test copy">
+<BasicSequence id="_2YLK" name="Setze Event-Optionen">
+<ProcedureCall id="_2YLI" procedure="qfs.jib.options.replayFXHardMouseEventAs">
+<variable name="clicktype">hard</variable>
+</ProcedureCall>
+<ProcedureCall id="_2YLJ" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
+<variable name="clicktype">semihard</variable>
+</ProcedureCall>
+</BasicSequence>
+<MouseEventStep clicks="1" client="JProServer" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_2YWp" modifiers="16" x="26" y="19"/>
+<MouseEventStep clicks="1" client="JProServer" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_2YWS" modifiers="16"/>
+<CheckStringStep client="JProServer" component="#Label:name=label1" id="_2YXc">
+<text>Welcome to FXML and JPro!</text>
+</CheckStringStep>
+</TestCase>
+</TestSet>
+</TestSet>
+<PackageRoot id="_3">
+<Package id="_2YHr" name="dependencies">
+<Dependency forcedcleanup="true" id="_2YO5" name="JProGestartet">
+<variable name="JProServer">JPro</variable>
+<variable name="JProServerStartupMessage"/>
+<SetupSequence id="_2YO6" name="Start JProServer">
+<ClientWaiter client="JProServer" id="_2YZe" local="true" raise="false" resvarname="isConnected" timeout="0"/>
+<IfSequence id="_2YZf" interpreter="groovy" test="!$(isConnected)">
+<IfSequence id="_1pP7" name="Windows" test="${qftest:windows}">
+<ShellClientStarter client="JProServer" command="gradlew.bat jproRun" directory=".." id="_2YXs"/>
+<ElseSequence id="_1pP9" name="macOS, Linux">
+<ShellClientStarter client="JProServer" command="./gradlew jproRun" directory=".." id="_2YWX"/>
+</ElseSequence>
+</IfSequence>
+</IfSequence>
+<ProcedureCall id="_2YOK" procedure="qfs.utils.waitForClientOutput">
+<variable name="client">JProServer</variable>
+<variable name="expectedOutput">$(JProServerStartupMessage)</variable>
+<variable name="timeout">${default:timeout:60000}</variable>
+<variable name="polling">100</variable>
+</ProcedureCall>
+</SetupSequence>
+<CleanupSequence id="_2YRQ">
+<TryStep id="_2YTf" name="Sicher stellen, dass der JPro Client ebenfalls beendet ist">
+<ClientStopper client="JProServer" id="_2YTg"/>
+<ProcessWaiter client="JProServer" id="_2YTh" timeout="15000"/>
+<CatchSequence exception="TestException" id="_2YTi" maxerror="0"/>
+</TryStep>
+</CleanupSequence>
+</Dependency>
+<Dependency forcedcleanup="true" id="_2YOR" name="OpenBrowser">
+<discriminator>browser</discriminator>
+<CommentStep id="_2YRF">
+<heading>Zunächst muss der JPro Server gestartet werden</heading>
+</CommentStep>
+<DependencyReference id="_2YTe" reference="dependencies.JProGestartet"/>
+<SetupSequence id="_2YPI" name="Browser bei Bedarf starten">
+<TryStep id="_2YPq" name="Client gestartet?">
+<ClientWaiter client="webClient" id="_2YPp" timeout="1"/>
+<CatchSequence exception="ClientNotConnectedException" id="_2YPr" maxerror="0" name="Client noch nicht gestartet -&gt; starten">
+<IfSequence id="_1pHi" name="Besten Browser bestimmen" test="&#34;$(browser)&#34;==&#34;&#34;">
+<ProcedureCall id="_1pIL" procedure="qfs.web.browser.general.getBestBrowser" retvarname="browser"/>
+</IfSequence>
+<BasicSequence id="_3NC" name="Web-Engine starten">
+<BrowserClientStarter browser="$(browser)" client="webClient"
+                      connectionmode="${default:webmode:$[&#34;Prefer WebDriver&#34; if ${default:preferwebdriver:false} else &#34;Prefer QF-Driver&#34;]}"
+                      executable="${qftest:java}" id="_3ND" openwindow="false"/>
+<ClientWaiter client="webClient" id="_3NE"/>
+</BasicSequence>
+<BasicSequence id="_1pHV" name="Einstellungen für Browser setzen">
+<ProcedureCall id="_1pHW" procedure="qfs.web.browser.settings.doStartupSettings">
+<variable name="client">webClient</variable>
+<variable name="browser">$(browser)</variable>
+<variable name="emptyCache">true</variable>
+<variable name="enableCookies">true</variable>
+<variable name="deleteCookies">true</variable>
+<variable name="locale">de</variable>
+<variable name="enableProxy">false</variable>
+<variable name="proxyAddress"/>
+<variable name="proxyPort"/>
+<variable name="proxyAutoconfigurl"/>
+<variable name="enableProxyBypass">false</variable>
+<variable name="proxyBypass"/>
+<variable name="mozprofile"/>
+<variable name="compatibilitymode">no</variable>
+</ProcedureCall>
+</BasicSequence>
+<BasicSequence id="_1pHX" name="Browserfenster öffnen">
+<BrowserClientStarter browser="${default:browser:chrome}" client="webClient" executable="${qftest:java}" height="900" id="_1pHY" openwindow="true"
+                      url="$(url)"/>
+<DocumentWaiter client="webClient" component="genericDocument" id="_1pHZ" timeout="60000"/>
+</BasicSequence>
+<BasicSequence id="_1pHa" name="CustomWebResolver installieren">
+<InstallCWRStep client="webClient" engine="web" id="_2YPJ">
+<code>ignoreTags:
+- DIV
+- SPAN
+genericClasses: []</code>
+<comment>Mit einem CustomWebResolver übersetzen Sie die Spezifika
+der Komponenten Ihrer Webanwendung in generische Klassen,
+die QF-Test versteht.
+Dadurch werden die Komponentenerkennung drastisch verbessert
+und spezifischere Checks ermöglicht.
+Die wichtigste Kategorie ist "genericClasses". Hier können
+Sie HTML-Elemente generischen Klassen zuweisen anhand deren
+HTML-Tags, CSS-Klassen oder HTML-Attributen.
+Für weitere Informationen und Beispiele wählen Sie "Was ist
+das?" im Kontextmenü des Knotens.</comment>
+</InstallCWRStep>
+</BasicSequence>
+</CatchSequence>
+</TryStep>
+</SetupSequence>
+<CleanupSequence id="_2YOT" name="JPro Client beenden">
+<TryStep id="_2YOU" name="Verbindung zwischen Web und FX Clients lösen">
+<ClientWaiter client="$(client)" engine="fx" id="_2YOV" timeout="0"/>
+<ClientScriptStep client="$(client)" engine="fx" id="_2YOW">
+<code>from de.qfs.apps.qftest.client import Client
+Client.instance().setForeignPlayback(None)</code>
+</ClientScriptStep>
+<CatchSequence exception="ClientNotConnectedException" id="_2YOX" maxerror="0"/>
+</TryStep>
+<TryStep id="_2YS7" name="Browser schließen">
+<WindowEventStep client="webClient" component="localhost:8080" event="WINDOW_CLOSING" id="_2YS8"/>
+<TryStep id="_2YS9" name="Browser beendet?">
+<ProcessWaiter client="webClient" id="_2YSB" timeout="10000"/>
+<CatchSequence exception="ClientNotTerminatedException" id="_2YSC" maxerror="0">
+<TryStep id="_2YSD" name="Browser hart beenden">
+<ClientStopper client="webClient" id="_2YSE"/>
+<ProcessWaiter client="webClient" id="_2YSF" timeout="10000"/>
+<CatchSequence exception="TestException" id="_2YSG" maxerror="0"/>
+</TryStep>
+</CatchSequence>
+</TryStep>
+<CatchSequence exception="TestException" id="_2YSH" maxerror="0"/>
+</TryStep>
+</CleanupSequence>
+</Dependency>
+<Dependency id="_2YVT" name="JProDemoGestartet">
+<discriminator>engine</discriminator>
+<variable name="engine">fx</variable>
+<variable name="JProServer">JPro</variable>
+<CommentStep id="_2YVU">
+<heading>Zunächst müssen der JPro server und der Browser gestartet sein</heading>
+</CommentStep>
+<DependencyReference id="_2YVV" reference="dependencies.OpenBrowser">
+<variable name="height">900</variable>
+</DependencyReference>
+<SetupSequence id="_2YVW" name="JPro FX Client und Web Client miteinander verbinden">
+<variable name="connected">false</variable>
+<variable name="newclient">false</variable>
+<TryStep id="_2YVX" name="Prüfen, ob bereits eine Verbindung zwischen FX und Web Client besteht $(engine)">
+<ClientWaiter client="$(client)" engine="$(engine)" id="_2YVY" timeout="0"/>
+<ClientScriptStep client="$(client)" engine="$(engine)" id="_2YVZ">
+<code>from de.qfs.apps.qftest.client import Client
+webClient = Client.instance().getForeignPlayback()
+rc.logMessage("webClient: %s" % webClient)
+rc.setLocal("_webclientInfo", str(webClient))
+</code>
+</ClientScriptStep>
+<ServerScriptStep id="_2YVa">
+<code>from de.qfs.apps.qftest.run import TestServerImpl
+ts = TestServerImpl.instance()
+webClient = ts.getPlayback("webClient")
+rc.logMessage("webClient: %s" % webClient)
+rc.setLocal("connected", str(webClient) == rc.lookup("_webclientInfo"))
+</code>
+</ServerScriptStep>
+<CatchSequence exception="ClientNotConnectedException" id="_2YVb" maxerror="0">
+<SetGlobalStep id="_2YVc" local="true" varname="newclient">
+<default>true</default>
+</SetGlobalStep>
+</CatchSequence>
+</TryStep>
+<IfSequence id="_2YVd" test="not $(connected)">
+<BasicSequence id="_2YVe" name="FX und Web Client miteinander verbinden">
+<CommentStep id="_2YVf">
+<heading>Warten, bis FX Client bereit ist</heading>
+</CommentStep>
+<ClientWaiter client="$(client)" engine="$(engine)" id="_2YVg"/>
+<IfSequence id="_2YVh" name="Neue Verbindung herstellen?" test="not $(newclient)">
+<CommentStep id="_2YVi">
+<heading>Für JPro aktuell nicht relevant</heading>
+</CommentStep>
+<TryStep disabled="true" id="_2YVj" name="Falls ein alter FX Client durch einen neuen ersetzt wurde, den neuen Client umbenennen">
+<ClientWaiter client="$(client):2" engine="$(engine)" id="_2YVk"/>
+<ServerScriptStep id="_2YVl" postdelay="3000">
+<code>from de.qfs.apps.qftest.run import TestServerImpl
+ts = TestServerImpl.instance()
+ts.exitClient(rc.lookup("client"), rc.context)
+</code>
+</ServerScriptStep>
+<ProcedureCall id="_2YVm" procedure="qfs.client.renameClient">
+<variable name="oldName">$(client):2</variable>
+<variable name="newName">$(client)</variable>
+<variable name="trueName">$$(client)</variable>
+</ProcedureCall>
+<CatchSequence exception="ClientNotConnectedException" id="_2YVn" maxerror="0"/>
+</TryStep>
+<ElseSequence id="_2YVo">
+<CommentStep id="_2YVp">
+<heading>Technisches Detail - Sicher stellen, dass Events für $(client) aufgenommen werden</heading>
+</CommentStep>
+<ProcedureCall id="_2YVq" procedure="qfs.client.renameClient">
+<variable name="oldName">$(client)</variable>
+<variable name="newName">$(client)</variable>
+<variable name="trueName">$$(client)</variable>
+</ProcedureCall>
+</ElseSequence>
+</IfSequence>
+<BasicSequence id="_2YVr" name="Verbinden der beiden Clients">
+<ServerScriptStep id="_2YVs" name="Verknüpfen der beiden Engines">
+<code>from de.qfs.apps.qftest.run import TestServerImpl
+ts = TestServerImpl.instance()
+fxClient = ts.getPlayback(rc.lookup("client"))
+webClient = ts.getPlayback("webClient")
+fxClient.setForeignPlayback(webClient)
+rc.logMessage("FX client: %s, Web client: %s" % (fxClient, webClient))</code>
+</ServerScriptStep>
+<ClientScriptStep client="$(client)" engine="fx" id="_2YVt" interpreter="groovy" name="Spezielle interne Einstellungen für den FX Client">
+<code>rc.setOption(Options.OPT_FX_USE_AWT_ROBOT, false)
+rc.setOption(Options.OPT_PLAY_FORCED_RAISE_WITH_CONTROL, false)
+rc.setOption(Options.OPT_PLAY_LINUX_FORCED_RAISE_WITH_TOPMOST, false)</code>
+</ClientScriptStep>
+<ClientScriptStep client="webClient" engine="web" id="_2YVu" interpreter="groovy" name="Spezielle interne Einstellungen für den Web Client">
+<code>rc.setOption(Options.OPT_JIB_RECORD_WEB_FILTER_JIB_COMPONENTS, true)
+</code>
+</ClientScriptStep>
+</BasicSequence>
+</BasicSequence>
+</IfSequence>
+<BasicSequence id="_2YXX" name="Setze Event-Optionen">
+<ProcedureCall id="_2YXY" procedure="qfs.jib.options.replayFXHardMouseEventAs">
+<variable name="clicktype">hard</variable>
+</ProcedureCall>
+<ProcedureCall id="_2YXZ" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
+<variable name="clicktype">semihard</variable>
+</ProcedureCall>
+</BasicSequence>
+</SetupSequence>
+</Dependency>
+</Package>
+</PackageRoot>
+<ExtraSequence id="_4"/>
+<WindowList id="_5"/>
+</RootStep>

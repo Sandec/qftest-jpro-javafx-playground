@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+
+jobs:
+  builds:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+          - os: ubuntu-latest
+          - os: windows-latest
+      fail-fast: false
+      max-parallel: 5
+    with:
+      os: ${{ matrix.os }}
+    secrets:
+      QFTEST_LICENSE: ${{ secrets.QFTEST_LICENSE }}
+    uses: ./.github/workflows/base.yml # calls the one above
