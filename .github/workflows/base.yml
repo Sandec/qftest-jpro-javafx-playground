@@ -33,17 +33,17 @@ jobs:
           echo "Installing Chrome requirements"
           sudo apt-get install libgtk2.0-0
 
-      - name: Disable Microphone Access on macOS
+      - name: Grant microphone access on macOS
         if: runner.os == 'macOS'
         run: |
-          sudo tccutil reset Microphone
-          sudo defaults write com.apple.audio.coreaudiod "allow-mic-access" -bool false
+          sqlite3 $HOME/Library/Application\ Support/com.apple.TCC/TCC.db "INSERT OR IGNORE INTO access VALUES ('kTCCServiceMicrophone','/usr/local/opt/runner/provisioner/provisioner',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,1687786159,NULL,NULL,'UNUSED',1687786159);"
 
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 21
+          cache: 'gradle'
       - name: Create QF-Test License
         shell: bash
         run: |
