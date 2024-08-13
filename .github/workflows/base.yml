@@ -43,7 +43,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 21
-          cache: 'gradle'
       - name: Create QF-Test License
         shell: bash
         run: |
@@ -62,7 +61,7 @@ jobs:
             echo "Detected Linux OS"
             export DISPLAY=:99.0 && /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16;
           fi
-          ./gradlew test --no-daemon
+          ./gradlew test
       - name: QF-Test Report
         if: always()
         uses: actions/upload-artifact@v4
