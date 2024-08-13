@@ -31,17 +31,23 @@ jobs:
           sudo apt-get install -y wget software-properties-common
           
           echo "Installing Chrome requirements"
-          sudo apt-get install libgtk2.0-0 
+          sudo apt-get install libgtk2.0-0
+
+      - name: Disable Microphone Access on macOS
+        if: runner.os == 'macOS'
+        run: |
+          sudo tccutil reset Microphone
+          sudo defaults write com.apple.audio.coreaudiod "allow-mic-access" -bool false
 
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 21
-      - name: Create QFTEST License
+      - name: Create QF-Test License
         shell: bash
         run: |
-          echo "Creating QFTEST License"
+          echo "Creating QF-Test License"
           echo "${{ secrets.QFTEST_LICENSE }}" > qftest.license
           if [[ "$OSTYPE" == "linux"* ]]; then
             ls -alh qftest.license
@@ -56,7 +62,7 @@ jobs:
             echo "Detected Linux OS"
             export DISPLAY=:99.0 && /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16;
           fi
-          ./gradlew test
+          ./gradlew test --no-daemon
       - name: QF-Test Report
         if: always()
         uses: actions/upload-artifact@v4
