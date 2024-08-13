@@ -3,30 +3,36 @@
 <RootStep id="_0" indentation="0" linelength="160" name="root" version="7.1.5">
 <include>qfs.qft</include>
 <variable name="webmode">CDP-Driver only</variable>
+<variable name="variant">web</variable>
 <variable name="url">http://localhost:8080</variable>
-<variable name="browser">edge</variable>
-<variable name="JProServerStartupMessage">Listening for HTTP on</variable>
+<variable name="browser">chrome</variable>
 <variable name="client">JProServer</variable>
 <DependencyReference id="_2YLC" reference="dependencies.JProDemoGestartet"/>
 <TestSet id="_1" name="Base Test Group">
+<variable name="jobname">jproRun</variable>
+<variable name="JProServerStartupMessage">Listening for HTTP on</variable>
 <DataDriver id="_2YZg">
-<TableDataBinder id="_2YZh" name="Browsers">
-<TableBinderColumn title="browser" width="741">
-<data>chrome</data>
-<data>edge</data>
-<data>edge</data>
-<data>chrome</data>
+<TableDataBinder id="_2YZh" name="variants">
+<TableBinderColumn title="variant" width="83">
+<data>web</data>
+<data>desktop</data>
+<data>web</data>
 </TableBinderColumn>
-<TableBinderColumn title="os" width="64">
-<data>mac</data>
-<data>mac</data>
-<data>windows</data>
-<data>windows</data>
+<TableBinderColumn title="browser" width="96">
+<data>chrome</data>
+<data/>
+<data>edge</data>
+</TableBinderColumn>
+<TableBinderColumn title="os" width="573">
+<data>windows,linux,macos</data>
+<data>macos,linux</data>
+<data>macos,windows</data>
 </TableBinderColumn>
 </TableDataBinder>
 </DataDriver>
-<TestSet condition="$(os) == ${qftest:os.name}" id="_2YZk" name="TheTests">
-<TestCase id="_2YXt" name="Click Button and test">
+<TestSet id="_2YZk" name="TheTests $(variant) $(os)">
+<comment>'$(os)' == '${qftest:os.name}'</comment>
+<TestCase condition="rc.callProcedure(&#34;runOnSystem&#34;, [&#34;os&#34; : &#34;$(os)&#34;])" id="_2YXt" interpreter="groovy" name="Click Button and test">
 <BasicSequence id="_2YXu" name="Setze Event-Optionen">
 <ProcedureCall id="_2YXv" procedure="qfs.jib.options.replayFXHardMouseEventAs">
 <variable name="clicktype">hard</variable>
@@ -82,26 +88,77 @@ for further information.</comment>
 </TestSet>
 </TestSet>
 <PackageRoot id="_3">
+<Procedure id="_2Yba" name="runOnSystem">
+<variable name="os"/>
+<comment>Determine if the specified os is the same as the os of the machine running the test.
+
+@param os - the operating system to check for
+@returns true if the specified os meets the running os, false otherwhise</comment>
+<ServerScriptStep id="_2Ybj" interpreter="groovy">
+<code>def os = rc.lookup("os")
+println "os: " + os
+println "mac: " + rc.lookup("qftest","macOS")
+println "windows: " + rc.lookup("qftest","windows")
+println "linux: " + rc.lookup("qftest","linux")
+def runOnSystem = false
+if (os.contains("macos") &amp;&amp; rc.getBool("qftest","macOS")) {
+    println ("ismacos")
+    runOnSystem = true
+}
+if (os.contains("windows") &amp;&amp; rc.getBool("qftest","windows")){
+    runOnSystem = true
+    println ("iswin")
+}
+if (os.contains("linux") &amp;&amp; rc.getBool("qftest","linux")){
+    runOnSystem = true
+    println ("islinux")
+}
+rc.setLocal("runOnSystem",runOnSystem)</code>
+</ServerScriptStep>
+<ReturnStep id="_2Ybo" retval="$(runOnSystem)"/>
+</Procedure>
 <Package id="_2YHr" name="dependencies">
-<Dependency forcedcleanup="true" id="_2YO5" name="JProGestartet">
+<Dependency forcedcleanup="true" id="_2YO5" name="JProServerStarted">
+<discriminator>jobname</discriminator>
 <variable name="JProServer">JPro</variable>
 <variable name="JProServerStartupMessage"/>
 <SetupSequence id="_2YO6" name="Start JProServer">
+<IfSequence id="_2YbU" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<SetGlobalStep id="_2YbV" local="true" varname="jobname">
+<default>jproRun</default>
+</SetGlobalStep>
+<ElseSequence id="_2YbW">
+<SetGlobalStep id="_2YbX" local="true" varname="jobname">
+<default>run</default>
+</SetGlobalStep>
+</ElseSequence>
+</IfSequence>
 <ClientWaiter client="JProServer" id="_2YZe" local="true" raise="false" resvarname="isConnected" timeout="0"/>
 <IfSequence id="_2YZf" interpreter="groovy" test="!$(isConnected)">
 <IfSequence id="_1pP7" name="Windows" test="${qftest:windows}">
-<ShellClientStarter client="JProServer" command="gradlew.bat jproRun" directory=".." id="_2YXs"/>
+<ShellClientStarter client="JProServer" command="gradlew.bat $(jobname)" directory=".." id="_2YXs"/>
 <ElseSequence id="_1pP9" name="macOS, Linux">
-<ShellClientStarter client="JProServer" command="./gradlew jproRun" directory=".." id="_2YWX"/>
+<ShellClientStarter client="JProServer" command="./gradlew $(jobname)" directory=".." id="_2YWX"/>
 </ElseSequence>
 </IfSequence>
 </IfSequence>
-<ProcedureCall id="_2YOK" procedure="qfs.utils.waitForClientOutput">
+<ProcedureCall disabled="true" id="_2YOK" procedure="qfs.utils.waitForClientOutput">
 <variable name="client">JProServer</variable>
 <variable name="expectedOutput">$(JProServerStartupMessage)</variable>
 <variable name="timeout">${default:timeout:60000}</variable>
 <variable name="polling">100</variable>
 </ProcedureCall>
+<IfSequence id="_2YOJ" name="Wait for server startup" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<ProcedureCall id="_2YbQ" procedure="qfs.utils.waitForClientOutput">
+<variable name="client">JProServer</variable>
+<variable name="expectedOutput">$(JProServerStartupMessage)</variable>
+<variable name="timeout">${default:timeout:60000}</variable>
+<variable name="polling">1000</variable>
+</ProcedureCall>
+<ElseSequence id="_2YOL">
+<ClientWaiter client="JProServer" id="_2YbY"/>
+</ElseSequence>
+</IfSequence>
 </SetupSequence>
 <CleanupSequence id="_2YRQ">
 <TryStep id="_2YTf" name="Sicher stellen, dass der JPro Client ebenfalls beendet ist">
@@ -116,8 +173,9 @@ for further information.</comment>
 <CommentStep id="_2YRF">
 <heading>Zunächst muss der JPro Server gestartet werden</heading>
 </CommentStep>
-<DependencyReference id="_2YTe" reference="dependencies.JProGestartet"/>
+<DependencyReference id="_2YTe" reference="dependencies.JProServerStarted"/>
 <SetupSequence id="_2YPI" name="Browser bei Bedarf starten">
+<IfSequence id="_2YbM" interpreter="groovy" test="&#34;$(variant)&#34;==&#34;web&#34;">
 <TryStep id="_2YPq" name="Client gestartet?">
 <ClientWaiter client="webClient" id="_2YPp" timeout="1"/>
 <CatchSequence exception="ClientNotConnectedException" id="_2YPr" maxerror="0" name="Client noch nicht gestartet -&gt; starten">
@@ -173,8 +231,10 @@ das?" im Kontextmenü des Knotens.</comment>
 </BasicSequence>
 </CatchSequence>
 </TryStep>
+</IfSequence>
 </SetupSequence>
 <CleanupSequence id="_2YOT" name="JPro Client beenden">
+<IfSequence id="_2YbN" test="&#34;$(variant)&#34;==&#34;web&#34;">
 <TryStep id="_2YOU" name="Verbindung zwischen Web und FX Clients lösen">
 <ClientWaiter client="$(client)" engine="fx" id="_2YOV" timeout="0"/>
 <ClientScriptStep client="$(client)" engine="fx" id="_2YOW">
@@ -197,6 +257,7 @@ Client.instance().setForeignPlayback(None)</code>
 </TryStep>
 <CatchSequence exception="TestException" id="_2YSH" maxerror="0"/>
 </TryStep>
+</IfSequence>
 </CleanupSequence>
 </Dependency>
 <Dependency id="_2YVT" name="JProDemoGestartet">
@@ -212,6 +273,7 @@ Client.instance().setForeignPlayback(None)</code>
 <SetupSequence id="_2YVW" name="JPro FX Client und Web Client miteinander verbinden">
 <variable name="connected">false</variable>
 <variable name="newclient">false</variable>
+<IfSequence id="_2YbP" test="&#34;$(variant)&#34;==&#34;web&#34;">
 <TryStep id="_2YVX" name="Prüfen, ob bereits eine Verbindung zwischen FX und Web Client besteht $(engine)">
 <ClientWaiter client="$(client)" engine="$(engine)" id="_2YVY" timeout="0"/>
 <ClientScriptStep client="$(client)" engine="$(engine)" id="_2YVZ">
@@ -292,6 +354,7 @@ rc.setOption(Options.OPT_PLAY_LINUX_FORCED_RAISE_WITH_TOPMOST, false)</code>
 </BasicSequence>
 </BasicSequence>
 </IfSequence>
+</IfSequence>
 <BasicSequence id="_2YXX" name="Setze Event-Optionen">
 <ProcedureCall id="_2YXY" procedure="qfs.jib.options.replayFXHardMouseEventAs">
 <variable name="clicktype">hard</variable>
@@ -305,5 +368,21 @@ rc.setOption(Options.OPT_PLAY_LINUX_FORCED_RAISE_WITH_TOPMOST, false)</code>
 </Package>
 </PackageRoot>
 <ExtraSequence id="_4"/>
-<WindowList id="_5"/>
+<WindowList id="_5">
+<WindowStep class="Window" engine="fx" height="849" id="win" uid="_2Yad" width="1024">
+<extrafeature name="qfs:class" negate="false" regexp="false" state="0">javafx.stage.Stage</extrafeature>
+<extrafeature name="qfs:genericclass" negate="false" regexp="false" state="0">Window</extrafeature>
+<extrafeature name="qfs:systemclass" negate="false" regexp="false" state="0">javafx.stage.Stage</extrafeature>
+</WindowStep>
+<WebPageStep class="Window" feature="localhost:8080" height="813" id="localhost:8080" uid="_2Yaf" width="1024">
+<extrafeature name="baseurl" negate="false" regexp="false" state="0">http://localhost:8080/</extrafeature>
+<extrafeature name="qfs:class" negate="false" regexp="false" state="0">DOCUMENT</extrafeature>
+<extrafeature name="qfs:genericclass" negate="false" regexp="false" state="0">Window</extrafeature>
+<extrafeature name="qfs:labelBest" negate="false" regexp="false" state="0">Title: Hello JPro</extrafeature>
+<extrafeature name="qfs:labelTitle" negate="false" regexp="false" state="0">Title: Hello JPro</extrafeature>
+<extrafeature name="qfs:systemclass" negate="false" regexp="false" state="0">DOCUMENT</extrafeature>
+<extrafeature name="title" negate="false" regexp="false" state="0">Title: Hello JPro</extrafeature>
+<extrafeature name="url" negate="false" regexp="false" state="0">http://localhost:8080/</extrafeature>
+</WebPageStep>
+</WindowList>
 </RootStep>
