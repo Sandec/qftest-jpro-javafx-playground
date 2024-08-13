@@ -95,6 +95,7 @@ qftest {
     //baseUrl = "http://qftest-repo.mycompany.com/stable" // not used, if "versionDir" is specified
 
     //version = "local"
+    version = "7.1.5"
     arguments = ["-license", "$projectDir/qftest.license"]
     //license = "$projectDir/qflicense.license"
     //license = "product = qftest\n"
