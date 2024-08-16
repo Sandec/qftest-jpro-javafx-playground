@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE RootStep>
-<RootStep id="_0" indentation="0" linelength="160" name="root" version="7.1.5">
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
 <include>qfs.qft</include>
 <variable name="webmode">CDP-Driver only</variable>
 <variable name="variant">web</variable>
@@ -309,7 +309,7 @@ rc.setLocal("connected", str(webClient) == rc.lookup("_webclientInfo"))
 </CommentStep>
 <TryStep disabled="true" id="_2YVj" name="Falls ein alter FX Client durch einen neuen ersetzt wurde, den neuen Client umbenennen">
 <ClientWaiter client="$(client):2" engine="$(engine)" id="_2YVk"/>
-<ServerScriptStep id="_2YVl" postdelay="3000">
+<ServerScriptStep id="_2YVl" postdelay="6000">
 <code>from de.qfs.apps.qftest.run import TestServerImpl
 ts = TestServerImpl.instance()
 ts.exitClient(rc.lookup("client"), rc.context)
