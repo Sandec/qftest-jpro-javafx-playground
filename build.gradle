@@ -93,6 +93,7 @@ qftest {
     //versionDir = "C:/Program Files/QFS/QF-Test/qftest-6.0.5"
     //version = "latest" // not used, if "versionDir" is specified
     baseUrl = "https://www.qfs.de/fileadmin/Webdata/pub/temp/31112/" // not used, if "versionDir" is specified
+    baseUrl = "https://www.qfs.de/fileadmin/Webdata/pub/dev/31172/"
 
     //version = "local"
     version = "8.0.1-dev"
