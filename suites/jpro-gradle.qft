@@ -13,24 +13,24 @@
 <variable name="JProServerStartupMessage">Listening for HTTP on</variable>
 <DataDriver id="_2YZg">
 <TableDataBinder id="_2YZh" name="variants">
-<TableBinderColumn title="variant" width="83">
+<TableBinderColumn title="variant" width="121">
 <data>web</data>
 <data>desktop</data>
 <data>web</data>
 </TableBinderColumn>
-<TableBinderColumn title="browser" width="96">
+<TableBinderColumn title="browser" width="134">
 <data>chrome</data>
 <data/>
 <data>edge</data>
 </TableBinderColumn>
-<TableBinderColumn title="os" width="573">
+<TableBinderColumn title="os" width="610">
 <data>windows,linux,macos</data>
-<data>macos,linux</data>
-<data>macos,windows</data>
+<data>windows,macos,linux</data>
+<data>windows</data>
 </TableBinderColumn>
 </TableDataBinder>
 </DataDriver>
-<TestSet id="_2YZk" name="TheTests $(variant) $(os)">
+<TestSet id="_2YZk" name="TheTests $(variant) $(browser) $(os)">
 <comment>'$(os)' == '${qftest:os.name}'</comment>
 <TestCase condition="rc.callProcedure(&#34;runOnSystem&#34;, [&#34;os&#34; : &#34;$(os)&#34;])" id="_2YXt" interpreter="groovy" name="Click Button and test">
 <BasicSequence id="_2YXu" name="Setze Event-Optionen">
