@@ -7,6 +7,8 @@
 <variable name="url">http://localhost:8080</variable>
 <variable name="browser">chrome</variable>
 <variable name="client">JProServer</variable>
+<variable name="url">http://localhost:8080</variable>
+<variable name="variant">web</variable>
 <DependencyReference id="_2YLC" reference="dependencies.JProDemoGestartet"/>
 <TestSet id="_1" name="Base Test Group">
 <variable name="jobname">jproRun</variable>
@@ -14,19 +16,25 @@
 <DataDriver id="_2YZg">
 <TableDataBinder id="_2YZh" name="variants">
 <TableBinderColumn title="variant" width="121">
-<data>web</data>
 <data>desktop</data>
+<data>web</data>
+<data>web</data>
+<data>web</data>
 <data>web</data>
 </TableBinderColumn>
 <TableBinderColumn title="browser" width="134">
-<data>chrome</data>
 <data/>
+<data>chrome</data>
+<data>firefox</data>
 <data>edge</data>
+<data>safari</data>
 </TableBinderColumn>
 <TableBinderColumn title="os" width="610">
-<data>windows,linux,macos</data>
 <data>windows,macos,linux</data>
-<data>windows</data>
+<data>windows,linux,macos</data>
+<data/>
+<data>windows,mac</data>
+<data>macos</data>
 </TableBinderColumn>
 </TableDataBinder>
 </DataDriver>
