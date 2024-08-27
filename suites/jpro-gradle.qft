@@ -2,7 +2,7 @@
 <!DOCTYPE RootStep>
 <RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
 <include>qfs.qft</include>
-<variable name="webmode">CDP-Driver only</variable>
+<variable name="webmode">Prefer CDP-Driver</variable>
 <variable name="variant">web</variable>
 <variable name="url">http://localhost:8080</variable>
 <variable name="browser">chrome</variable>
