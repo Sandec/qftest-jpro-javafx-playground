@@ -43,10 +43,11 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: 21
-      - name: install-edge
-        uses: browser-actions/setup-edge@v1
-      - name: install-firefox
-        uses: browser-actions/setup-firefox@v1
+      # seems to break more than it fixes
+      #- name: install-edge
+      #  uses: browser-actions/setup-edge@v1
+      #- name: install-firefox
+      #  uses: browser-actions/setup-firefox@v1
       - name: Create QF-Test License
         shell: bash
         run: |
