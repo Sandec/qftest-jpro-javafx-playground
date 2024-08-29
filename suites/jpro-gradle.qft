@@ -2,7 +2,6 @@
 <!DOCTYPE RootStep>
 <RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
 <include>qfs.qft</include>
-<variable name="webmode">Prefer CDP-Driver</variable>
 <variable name="variant">web</variable>
 <variable name="url">http://localhost:8080</variable>
 <variable name="browser">chrome</variable>
@@ -32,8 +31,8 @@
 <TableBinderColumn title="os" width="610">
 <data>windows,macos,linux</data>
 <data>windows,linux,macos</data>
-<data/>
-<data>windows,mac</data>
+<data>windows,linux,macos</data>
+<data>windows,macos</data>
 <data>macos</data>
 </TableBinderColumn>
 </TableDataBinder>
@@ -55,44 +54,6 @@
 <text>Welcome to FXML and JPro!</text>
 </CheckStringStep>
 </TestCase>
-<TestCase disabled="true" id="_2YWm" name="Recorded Test">
-<BasicSequence id="_2YWn" name="Clicks">
-<MouseEventStep clicks="1" client="$(webClient)" component="#Link:text=FXML" event="MOUSE_MPRC" id="_2YWo" modifiers="16"/>
-<ComponentEventStep client="jproServer" component="win" event="COMPONENT_RESIZED" id="_2YWq" param1="1024" param2="142"/>
-<CommentStep id="_2YWr">
-<heading>JPro application detected - see comment</heading>
-<comment>Apparently you are recording events for an application based on JPro.
-
-In the current setup QF-Test "sees" only the browser and this view is very limited.
-By setting up an integrated test for the Java application and the browser,
-testing can be taken to a much higher level.
-
-Please see manual chapter 18
-"Testing Java desktop applications in a browser with Webswing and JPro"
-for further information.</comment>
-</CommentStep>
-<MouseEventStep clicks="1" client="jproServer" component="#Button:name=button" event="MOUSE_MPRC" id="_2YWs" modifiers="16"/>
-<MouseEventStep clicks="1" client="$(webClient)" component="localhost:8080.div" event="MOUSE_MPRC" id="_2YWt" modifiers="16" x="32" y="9"/>
-<CheckStringStep client="$(webClient)" component="localhost:8080.div2" id="_2YWz">
-<text>Welcome to FXML and JPro!wrong</text>
-</CheckStringStep>
-</BasicSequence>
-</TestCase>
-<TestCase disabled="true" id="_2YWA" name="Click Button and test copy">
-<BasicSequence id="_2YLK" name="Setze Event-Optionen">
-<ProcedureCall id="_2YLI" procedure="qfs.jib.options.replayFXHardMouseEventAs">
-<variable name="clicktype">hard</variable>
-</ProcedureCall>
-<ProcedureCall id="_2YLJ" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
-<variable name="clicktype">semihard</variable>
-</ProcedureCall>
-</BasicSequence>
-<MouseEventStep clicks="1" client="JProServer" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_2YWp" modifiers="16" x="26" y="19"/>
-<MouseEventStep clicks="1" client="JProServer" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_2YWS" modifiers="16"/>
-<CheckStringStep client="JProServer" component="#Label:name=label1" id="_2YXc">
-<text>Welcome to FXML and JPro!</text>
-</CheckStringStep>
-</TestCase>
 </TestSet>
 </TestSet>
 <PackageRoot id="_3">
@@ -104,22 +65,15 @@ for further information.</comment>
 @returns true if the specified os meets the running os, false otherwhise</comment>
 <ServerScriptStep id="_2Ybj" interpreter="groovy">
 <code>def os = rc.lookup("os")
-println "os: " + os
-println "mac: " + rc.lookup("qftest","macOS")
-println "windows: " + rc.lookup("qftest","windows")
-println "linux: " + rc.lookup("qftest","linux")
 def runOnSystem = false
 if (os.contains("macos") &amp;&amp; rc.getBool("qftest","macOS")) {
-    println ("ismacos")
     runOnSystem = true
 }
 if (os.contains("windows") &amp;&amp; rc.getBool("qftest","windows")){
     runOnSystem = true
-    println ("iswin")
 }
 if (os.contains("linux") &amp;&amp; rc.getBool("qftest","linux")){
     runOnSystem = true
-    println ("islinux")
 }
 rc.setLocal("runOnSystem",runOnSystem)</code>
 </ServerScriptStep>
@@ -191,9 +145,8 @@ rc.setLocal("runOnSystem",runOnSystem)</code>
 <ProcedureCall id="_1pIL" procedure="qfs.web.browser.general.getBestBrowser" retvarname="browser"/>
 </IfSequence>
 <BasicSequence id="_3NC" name="Web-Engine starten">
-<BrowserClientStarter browser="$(browser)" client="webClient"
-                      connectionmode="${default:webmode:$[&#34;Prefer WebDriver&#34; if ${default:preferwebdriver:false} else &#34;Prefer QF-Driver&#34;]}"
-                      executable="${qftest:java}" id="_3ND" openwindow="false"/>
+<BrowserClientStarter browser="$(browser)" client="webClient" connectionmode="${default:webmode:Prefer CDP-Driver}" executable="${qftest:java}" id="_3ND"
+                      openwindow="false"/>
 <ClientWaiter client="webClient" id="_3NE"/>
 </BasicSequence>
 <BasicSequence id="_1pHV" name="Einstellungen für Browser setzen">
@@ -252,7 +205,7 @@ Client.instance().setForeignPlayback(None)</code>
 <CatchSequence exception="ClientNotConnectedException" id="_2YOX" maxerror="0"/>
 </TryStep>
 <TryStep id="_2YS7" name="Browser schließen">
-<WindowEventStep client="webClient" component="localhost:8080" event="WINDOW_CLOSING" id="_2YS8"/>
+<WindowEventStep client="webClient" component="genericDocument" event="WINDOW_CLOSING" id="_2YS8"/>
 <TryStep id="_2YS9" name="Browser beendet?">
 <ProcessWaiter client="webClient" id="_2YSB" timeout="10000"/>
 <CatchSequence exception="ClientNotTerminatedException" id="_2YSC" maxerror="0">
@@ -376,21 +329,5 @@ rc.setOption(Options.OPT_PLAY_LINUX_FORCED_RAISE_WITH_TOPMOST, false)</code>
 </Package>
 </PackageRoot>
 <ExtraSequence id="_4"/>
-<WindowList id="_5">
-<WindowStep class="Window" engine="fx" height="849" id="win" uid="_2Yad" width="1024">
-<extrafeature name="qfs:class" negate="false" regexp="false" state="0">javafx.stage.Stage</extrafeature>
-<extrafeature name="qfs:genericclass" negate="false" regexp="false" state="0">Window</extrafeature>
-<extrafeature name="qfs:systemclass" negate="false" regexp="false" state="0">javafx.stage.Stage</extrafeature>
-</WindowStep>
-<WebPageStep class="Window" feature="localhost:8080" height="813" id="localhost:8080" uid="_2Yaf" width="1024">
-<extrafeature name="baseurl" negate="false" regexp="false" state="0">http://localhost:8080/</extrafeature>
-<extrafeature name="qfs:class" negate="false" regexp="false" state="0">DOCUMENT</extrafeature>
-<extrafeature name="qfs:genericclass" negate="false" regexp="false" state="0">Window</extrafeature>
-<extrafeature name="qfs:labelBest" negate="false" regexp="false" state="0">Title: Hello JPro</extrafeature>
-<extrafeature name="qfs:labelTitle" negate="false" regexp="false" state="0">Title: Hello JPro</extrafeature>
-<extrafeature name="qfs:systemclass" negate="false" regexp="false" state="0">DOCUMENT</extrafeature>
-<extrafeature name="title" negate="false" regexp="false" state="0">Title: Hello JPro</extrafeature>
-<extrafeature name="url" negate="false" regexp="false" state="0">http://localhost:8080/</extrafeature>
-</WebPageStep>
-</WindowList>
+<WindowList id="_5"/>
 </RootStep>
