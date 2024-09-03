@@ -53,7 +53,7 @@ jobs:
         run: |
           echo "Setting up browsers"
           if [[ "$OSTYPE" == "linux"* ]]; then
-            setupPolicyLinux.sh
+            ./setupPolicyLinux.sh
           fi
       - name: Create QF-Test License
         shell: bash
