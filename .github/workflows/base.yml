@@ -54,7 +54,7 @@ jobs:
           echo "Setting up browsers"
           if [[ "$OSTYPE" == "linux"* ]]; then
             echo "Running on linux, starting script: setupPolicyLinux.sh"
-            chmox +x ./setupPolicyLinux.sh
+            chmod +x ./setupPolicyLinux.sh
             ./setupPolicyLinux.sh
           fi
       - name: Create QF-Test License
