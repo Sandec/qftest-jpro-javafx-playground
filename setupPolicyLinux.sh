@@ -1,28 +1,22 @@
 #!/bin/bash
 
-# Directory for Chrome/Edge policies
-POLICY_DIR="/etc/opt"
+# Determine the browser directory (change to 'edge' for Microsoft Edge)
+BROWSER_DIR="/etc/opt/chrome/policies/managed"
+# For Edge, uncomment the following line:
+# BROWSER_DIR="/etc/opt/edge/policies/managed"
 
-# Ensure the policy directories exist
-sudo mkdir -p "$POLICY_DIR/chrome/policies/managed"
-sudo mkdir -p "$POLICY_DIR/edge/policies/managed"
+# Create the directory if it doesn't exist
+sudo mkdir -p "$BROWSER_DIR"
 
-# Create Chrome policy JSON file
-cat <<EOF | sudo tee "$POLICY_DIR/chrome/policies/managed/policies.json" > /dev/null
-{
+# Define the JSON content
+POLICY_CONTENT='{
   "RemoteDebuggingAllowed": true,
-  "DeveloperToolsAvailability": 1,  // 1: Allowed, 2: Disallowed, 3: Allowed in Content Scripts Only
+  "DeveloperToolsAvailability": 1,
   "DeveloperToolsDisabled": false
-}
-EOF
+}'
 
-# Create Edge policy JSON file
-cat <<EOF | sudo tee "$POLICY_DIR/edge/policies/managed/policies.json" > /dev/null
-{
-  "RemoteDebuggingAllowed": true,
-  "DeveloperToolsAvailability": 1,  // 1: Allowed, 2: Disallowed, 3: Allowed in Content Scripts Only
-  "DeveloperToolsDisabled": false
-}
-EOF
+# Write the content to the policy file
+echo "$POLICY_CONTENT" | sudo tee "$BROWSER_DIR/managed_policies.json" > /dev/null
 
-echo "Policies for Chrome and Edge have been set successfully."
+# Feedback to user
+echo "Policies have been set in $BROWSER_DIR/managed_policies.json"
