@@ -48,6 +48,13 @@ jobs:
       #  uses: browser-actions/setup-edge@v1
       #- name: install-firefox
       #  uses: browser-actions/setup-firefox@v1
+      - name: Browser Setups
+        shell: bash
+        run: |
+          echo "Setting up browsers"
+          if [[ "$OSTYPE" == "linux"* ]]; then
+            setupPolicyLinux.sh
+          fi
       - name: Create QF-Test License
         shell: bash
         run: |

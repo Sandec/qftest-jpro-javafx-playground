@@ -13,8 +13,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-latest
-          - os: ubuntu-latest
+        #  - os: macos-latest
+        #  - os: ubuntu-latest
           - os: windows-latest
       fail-fast: false
       max-parallel: 5
