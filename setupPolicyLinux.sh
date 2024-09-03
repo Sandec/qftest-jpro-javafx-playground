@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # Determine the browser directory (change to 'edge' for Microsoft Edge)
 BROWSER_DIR="/etc/opt/chrome/policies/managed"
 # For Edge, uncomment the following line:
@@ -20,3 +22,7 @@ echo "$POLICY_CONTENT" | sudo tee "$BROWSER_DIR/managed_policies.json" > /dev/nu
 
 # Feedback to user
 echo "Policies have been set in $BROWSER_DIR/managed_policies.json"
+
+# list directory
+echo "the files:"
+ls -alh "$BROWSER_DIR"
