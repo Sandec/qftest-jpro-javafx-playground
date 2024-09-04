@@ -3,6 +3,7 @@
 <RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
 <include>qfs.qft</include>
 <variable name="variant">web</variable>
+<variable name="JProServerStartupMessage">Listening for HTTP on</variable>
 <variable name="url">http://localhost:8080</variable>
 <variable name="browser">chrome</variable>
 <variable name="client">JProServer</variable>
@@ -10,8 +11,6 @@
 <variable name="variant">web</variable>
 <DependencyReference id="_2YLC" reference="dependencies.JProDemoGestartet"/>
 <TestSet id="_1" name="Base Test Group">
-<variable name="jobname">jproRun</variable>
-<variable name="JProServerStartupMessage">Listening for HTTP on</variable>
 <DataDriver id="_2YZg">
 <TableDataBinder id="_2YZh" name="variants">
 <TableBinderColumn title="variant" width="121">
