@@ -19,15 +19,28 @@ sed -i '' 's/from distutils.version import StrictVersion as version/from packagi
 echo "Making the tccutil.py script executable..."
 chmod +x tccutil.py
 
-# Step 5: Use AppleScript to grant microphone access to Google Chrome
+# Step 5: Launch Google Chrome
+echo "Launching Google Chrome..."
+open -a "Google Chrome"
+
+# Step 6: Use AppleScript to grant microphone access to Google Chrome
 echo "Granting microphone access to Google Chrome using AppleScript..."
 osascript <<EOD
 tell application "System Events"
+    -- Wait until Google Chrome is running
+    repeat until (exists process "Google Chrome")
+        delay 1
+    end repeat
+
+    -- Bring Google Chrome to the front
     set frontmost of process "Google Chrome" to true
-    delay 1
-    tell process "System Events"
-        click button "Allow" of window "Google Chrome" of application process "System Events"
-    end tell
+
+    -- Wait for the Allow prompt to appear and click Allow
+    repeat until (exists button "Allow" of window 1 of process "Google Chrome")
+        delay 1
+    end repeat
+
+    click button "Allow" of window 1 of process "Google Chrome"
 end tell
 EOD
 
