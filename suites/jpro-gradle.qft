@@ -145,7 +145,7 @@ rc.setLocal("runOnSystem",runOnSystem)</code>
 <ProcedureCall id="_1pIL" procedure="qfs.web.browser.general.getBestBrowser" retvarname="browser"/>
 </IfSequence>
 <BasicSequence id="_3NC" name="Web-Engine starten">
-<BrowserClientStarter browser="$(browser)" client="webClient" connectionmode="${default:webmode:Prefer CDP-Driver}" executable="${qftest:java}" id="_3ND"
+<BrowserClientStarter browser="$(browser)" client="webClient" connectionmode="${default:webmode:webdriver}" executable="${qftest:java}" id="_3ND"
                       openwindow="false"/>
 <ClientWaiter client="webClient" id="_3NE"/>
 </BasicSequence>
