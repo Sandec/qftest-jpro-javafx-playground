@@ -2,15 +2,14 @@ name: CI
 
 on:
   push:
-  pull_request:
-    types: [opened, synchronize]
-
-  # Allow manually triggering the workflow
-  workflow_dispatch:
+  # avoid double run
+  # pull_request:
+  #   types: [opened, synchronize]
+  # # Allow manually triggering the workflow
+  # workflow_dispatch:
 
 jobs:
   builds:
-    if: "!contains(github.event_name, 'push') || !github.event.pull_request" # Prevents double run
     strategy:
       matrix:
         include:
