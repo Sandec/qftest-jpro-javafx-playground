@@ -3,6 +3,7 @@
 <RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
 <include>qfs.qft</include>
 <variable name="variant">web</variable>
+<variable name="JProServerStartupMessage">Listening for HTTP on</variable>
 <variable name="url">http://localhost:8080</variable>
 <variable name="browser">chrome</variable>
 <variable name="client">JProServer</variable>
@@ -10,29 +11,27 @@
 <variable name="variant">web</variable>
 <DependencyReference id="_2YLC" reference="dependencies.JProDemoGestartet"/>
 <TestSet id="_1" name="Base Test Group">
-<variable name="jobname">jproRun</variable>
-<variable name="JProServerStartupMessage">Listening for HTTP on</variable>
 <DataDriver id="_2YZg">
 <TableDataBinder id="_2YZh" name="variants">
-<TableBinderColumn title="variant" width="121">
+<TableBinderColumn title="variant" width="158">
 <data>desktop</data>
 <data>web</data>
 <data>web</data>
 <data>web</data>
 <data>web</data>
 </TableBinderColumn>
-<TableBinderColumn title="browser" width="134">
+<TableBinderColumn title="browser" width="171">
 <data/>
 <data>chrome</data>
 <data>firefox</data>
 <data>edge</data>
 <data>safari</data>
 </TableBinderColumn>
-<TableBinderColumn title="os" width="610">
+<TableBinderColumn title="os" width="647">
 <data>windows,macos,linux</data>
 <data>windows,linux,macos</data>
-<data>windows,linux,macos</data>
-<data>windows,macos</data>
+<data>windows,linux</data>
+<data>windows</data>
 <data>macos</data>
 </TableBinderColumn>
 </TableDataBinder>
@@ -145,7 +144,7 @@ rc.setLocal("runOnSystem",runOnSystem)</code>
 <ProcedureCall id="_1pIL" procedure="qfs.web.browser.general.getBestBrowser" retvarname="browser"/>
 </IfSequence>
 <BasicSequence id="_3NC" name="Web-Engine starten">
-<BrowserClientStarter browser="$(browser)" client="webClient" connectionmode="${default:webmode:Prefer CDP-Driver}" executable="${qftest:java}" id="_3ND"
+<BrowserClientStarter browser="$(browser)" client="webClient" connectionmode="${default:webmode:webdriver}" executable="${qftest:java}" id="_3ND"
                       openwindow="false"/>
 <ClientWaiter client="webClient" id="_3NE"/>
 </BasicSequence>

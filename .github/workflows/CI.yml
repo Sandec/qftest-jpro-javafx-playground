@@ -2,11 +2,11 @@ name: CI
 
 on:
   push:
-  pull_request:
-    types: [opened, synchronize]
-
-  # Allow manually triggering the workflow
-  workflow_dispatch:
+  # avoid double run
+  # pull_request:
+  #   types: [opened, synchronize]
+  # # Allow manually triggering the workflow
+  # workflow_dispatch:
 
 jobs:
   builds:
