@@ -21,7 +21,7 @@ chmod +x tccutil.py
 
 # Step 5: Grant microphone access to Google Chrome
 echo "Granting microphone access to Google Chrome..."
-./tccutil.py --bundle-identifier=com.google.Chrome --service=Microphone --state=1
+./tccutil.py -i com.google.Chrome -e Microphone
 
 echo "Microphone access granted successfully. Proceeding with CI build steps..."
 
