@@ -19,9 +19,17 @@ sed -i '' 's/from distutils.version import StrictVersion as version/from packagi
 echo "Making the tccutil.py script executable..."
 chmod +x tccutil.py
 
-# Step 5: Grant microphone access to Google Chrome with sudo
-echo "Granting microphone access to Google Chrome..."
-sudo ./tccutil.py -i com.google.Chrome -e Microphone
+# Step 5: Use AppleScript to grant microphone access to Google Chrome
+echo "Granting microphone access to Google Chrome using AppleScript..."
+osascript <<EOD
+tell application "System Events"
+    set frontmost of process "Google Chrome" to true
+    delay 1
+    tell process "System Events"
+        click button "Allow" of window "Google Chrome" of application process "System Events"
+    end tell
+end tell
+EOD
 
 echo "Microphone access granted successfully. Proceeding with CI build steps..."
 
