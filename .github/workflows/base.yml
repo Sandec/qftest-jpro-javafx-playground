@@ -29,9 +29,12 @@ jobs:
           echo "Installing JPro requirements"
           sudo apt-get install -y xorg libgtk-3-0
           sudo apt-get install -y wget software-properties-common
-          
+      
           echo "Installing Chrome requirements"
           sudo apt-get install libgtk2.0-0
+          
+          # tests
+          sudo apt-get install cpufrequtils
 
       - name: Grant microphone access on macOS
         if: runner.os == 'macOS'
