@@ -13,25 +13,25 @@
 <TestSet id="_1" name="Base Test Group">
 <DataDriver id="_2YZg">
 <TableDataBinder id="_2YZh" name="variants">
-<TableBinderColumn title="variant" width="121">
+<TableBinderColumn title="variant" width="158">
 <data>desktop</data>
 <data>web</data>
 <data>web</data>
 <data>web</data>
 <data>web</data>
 </TableBinderColumn>
-<TableBinderColumn title="browser" width="134">
+<TableBinderColumn title="browser" width="171">
 <data/>
 <data>chrome</data>
 <data>firefox</data>
 <data>edge</data>
 <data>safari</data>
 </TableBinderColumn>
-<TableBinderColumn title="os" width="610">
+<TableBinderColumn title="os" width="647">
 <data>windows,macos,linux</data>
 <data>windows,linux,macos</data>
-<data>windows,linux,macos</data>
-<data>windows,macos</data>
+<data>windows,linux</data>
+<data>windows</data>
 <data>macos</data>
 </TableBinderColumn>
 </TableDataBinder>
