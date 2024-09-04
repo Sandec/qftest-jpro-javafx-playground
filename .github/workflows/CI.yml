@@ -10,6 +10,7 @@ on:
 
 jobs:
   builds:
+    if: "!contains(github.event_name, 'push') || !github.event.pull_request" # Prevents double run
     strategy:
       matrix:
         include:
