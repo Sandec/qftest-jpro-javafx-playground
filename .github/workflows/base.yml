@@ -41,7 +41,7 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           chmod +x macSetup.sh
-          ./macSetup.sh
+          sudo ./macSetup.sh
           # sudo sqlite3 "/Library/Application Support/com.apple.TCC/TCC.db" "INSERT OR REPLACE INTO access VALUES('kTCCServiceMicrophone','com.google.Chrome',0,1,1,NULL,NULL,NULL,'UNUSED',NULL,0,1541440109);"
           # sqlite3 $HOME/Library/Application\ Support/com.apple.TCC/TCC.db "INSERT OR IGNORE INTO access VALUES ('kTCCServiceMicrophone','/usr/local/opt/runner/provisioner/provisioner',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,1687786159,NULL,NULL,'UNUSED',1687786159);"
           # curl -O https://raw.githubusercontent.com/jacobsalmela/tccutil/master/tccutil.py
