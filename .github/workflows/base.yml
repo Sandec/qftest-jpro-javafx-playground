@@ -40,7 +40,11 @@ jobs:
       - name: Grant microphone access on macOS
         if: runner.os == 'macOS'
         run: |
-          sqlite3 $HOME/Library/Application\ Support/com.apple.TCC/TCC.db "INSERT OR IGNORE INTO access VALUES ('kTCCServiceMicrophone','/usr/local/opt/runner/provisioner/provisioner',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,1687786159,NULL,NULL,'UNUSED',1687786159);"
+          # sqlite3 $HOME/Library/Application\ Support/com.apple.TCC/TCC.db "INSERT OR IGNORE INTO access VALUES ('kTCCServiceMicrophone','/usr/local/opt/runner/provisioner/provisioner',1,2,4,1,NULL,NULL,0,'UNUSED',NULL,0,1687786159,NULL,NULL,'UNUSED',1687786159);"
+          curl -O https://raw.githubusercontent.com/jacobsalmela/tccutil/master/tccutil.py
+          chmod +x tccutil.py
+          ./tccutil.py --bundle-identifier=com.google.Chrome --service=Microphone --state=1
+
 
       - name: Setup Java 21
         uses: actions/setup-java@v4
