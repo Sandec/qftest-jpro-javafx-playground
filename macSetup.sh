@@ -3,8 +3,6 @@
 set -e  # Exit immediately if a command exits with a non-zero status.
 set -x
 
-set -e  # Exit immediately if a command exits with a non-zero status.
-
 # Step 1: Check for administrative privileges
 if [ "$EUID" -ne 0 ]; then
   echo "This script must be run as root. Exiting..."
@@ -29,7 +27,7 @@ chmod +x tccutil.py
 
 # Step 6: Modify the TCC database to allow microphone access for Google Chrome
 echo "Modifying TCC database to grant microphone access to Google Chrome..."
-sqlite3 "/Library/Application Support/com.apple.TCC/TCC.db" "INSERT OR REPLACE INTO access VALUES('kTCCServiceMicrophone','com.google.Chrome',0,1,1,NULL,NULL,NULL,'UNUSED',NULL,0,strftime('%s','now'));"
+sqlite3 "/Library/Application Support/com.apple.TCC/TCC.db" "INSERT OR REPLACE INTO access VALUES('kTCCServiceMicrophone','com.google.Chrome',0,1,1,NULL,NULL,NULL,'UNUSED',NULL,0,strftime('%s','now'),NULL,NULL,'UNUSED',NULL,NULL);"
 
 echo "Microphone access granted successfully. Proceeding with CI build steps..."
 
