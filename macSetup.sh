@@ -23,7 +23,7 @@ chmod +x tccutil.py
 echo "Launching Google Chrome..."
 open -a "Google Chrome"
 
-# Step 6: Use AppleScript to grant microphone access to Google Chrome
+# Step 6: Use AppleScript to grant microphone access to Google Chrome with a timeout
 echo "Granting microphone access to Google Chrome using AppleScript..."
 osascript <<EOD
 tell application "System Events"
@@ -35,8 +35,14 @@ tell application "System Events"
     -- Bring Google Chrome to the front
     set frontmost of process "Google Chrome" to true
 
-    -- Wait for the Allow prompt to appear and click Allow
+    -- Wait for the Allow prompt to appear and click Allow with a timeout
+    set timeoutSeconds to 30
+    set startTime to current date
     repeat until (exists button "Allow" of window 1 of process "Google Chrome")
+        if (current date) - startTime > timeoutSeconds then
+            display dialog "Timed out waiting for Google Chrome permission dialog." buttons {"OK"} default button "OK"
+            return
+        end if
         delay 1
     end repeat
 
@@ -44,7 +50,7 @@ tell application "System Events"
 end tell
 EOD
 
-echo "Microphone access granted successfully. Proceeding with CI build steps..."
+echo "Microphone access granted (or timeout reached). Proceeding with CI build steps..."
 
 # Continue with other CI steps...
 # Add any additional commands you need for your build process below.
