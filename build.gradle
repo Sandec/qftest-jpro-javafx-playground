@@ -97,7 +97,7 @@ qftest {
     //version = "local"
     version = "8.0.0"
   //  version = "8.0.1-dev"
-  //  arguments = ["-license", "$projectDir/qftest.license"]
+    arguments = ["-license", "$projectDir/qftest.license"]
     //license = "$projectDir/qflicense.license"
     //license = "product = qftest\n"
 
