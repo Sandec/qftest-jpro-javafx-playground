@@ -101,6 +101,9 @@ qftest {
     //license = "$projectDir/qflicense.license"
     //license = "product = qftest\n"
 
+    variables = ["webmode":"cdpdriver"]
+    options = ["OPT_WEB_CDP_READ_TIMEOUT":10000]
+
     reportDir = "$projectDir/qftest"
     runLogDir = "$projectDir/qftest"
 }
