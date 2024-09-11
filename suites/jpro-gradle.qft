@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE RootStep>
-<RootStep id="_0" indentation="0" linelength="160" name="root"
-          signature="302C0214524614F4B8A4B1ACE20EF86E38F18E91498E0C6B021433AE915A9431FC3238B86BADD40B7040B1D580E3" version="8.1.0">
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.0">
 <include>qfs.qft</include>
 <variable name="variant">web</variable>
 <variable name="JProServerStartupMessage">Listening for HTTP on</variable>
@@ -38,9 +37,9 @@
 </TableBinderColumn>
 </TableDataBinder>
 </DataDriver>
-<TestSet id="_2YZk" name="TheTests $(variant) $(browser) $(os)">
+<TestSet condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_2YZk" interpreter="groovy" name="TheTests $(variant) $(browser) $(os)">
 <comment>'$(os)' == '${qftest:os.name}'</comment>
-<TestCase condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_2YXt" interpreter="groovy" name="Click Button and test">
+<TestCase id="_2YXt" interpreter="groovy" name="Click Button and test">
 <BasicSequence id="_2YXu" name="Setze Event-Optionen">
 <ProcedureCall id="_2YXv" procedure="qfs.jib.options.replayFXHardMouseEventAs">
 <variable name="clicktype">hard</variable>
