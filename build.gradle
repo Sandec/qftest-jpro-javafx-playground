@@ -95,7 +95,7 @@ qftest {
     //baseUrl = "https://www.qfs.de/fileadmin/Webdata/pub/dev/31172/"
 
     //version = "local"
-    version = "8.0.0"
+    version = "8.0.1"
   //  version = "8.0.1-dev"
     arguments = ["-license", "$projectDir/qftest.license"]
     //license = "$projectDir/qflicense.license"
