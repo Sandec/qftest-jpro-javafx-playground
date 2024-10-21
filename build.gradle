@@ -113,6 +113,12 @@ test {
         showStandardStreams = true
     }
     qftest {
-        suites = ["$projectDir/suites/jpro-gradle.qft"]
+        if (project.hasProperty("loadbalancer")) {
+            println("Running loadbalancer tests")
+            suites = ["$projectDir/suites/jpro-loadbalancer.qft"]
+        } else {
+            println("Running base tests")
+            suites = ["$projectDir/suites/jpro-gradle.qft"]
+        }
     }
 }
