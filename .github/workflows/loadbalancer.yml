@@ -16,6 +16,14 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
+      - name: Create QF-Test License
+        shell: bash
+        run: |
+          echo "Creating QF-Test License"
+          echo "${{ secrets.QFTEST_LICENSE }}" > qftest.license
+          if [[ "$OSTYPE" == "linux"* ]]; then
+            ls -alh qftest.license
+          fi
       - name: Prepare
         run: |
           ./prepare.sh
