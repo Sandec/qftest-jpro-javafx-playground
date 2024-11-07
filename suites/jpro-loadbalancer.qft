@@ -201,9 +201,9 @@ def maxRetries = 20;
 def interval = 1000; // in milliseconds
 
 def servername = ""
-def jproAppNode = rc.getComponent("genericDocument").getElementsByTagName("jpro-app")[0]
 
 for (int i = 0; i &lt; maxRetries; i++) {
+    def jproAppNode = rc.getComponent("genericDocument").getElementsByTagName("jpro-app")[0]
     servername = jproAppNode ? jproAppNode.getAttributeJS("data-server-name") : ""
     
     if(servername == null || servername == "") {
