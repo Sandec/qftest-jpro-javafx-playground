@@ -195,20 +195,30 @@ Client.instance().setForeignPlayback(None)</code>
 <IfSequence id="_2YbP" test="&#34;$(variant)&#34;==&#34;web&#34;">
 <BasicSequence id="_2Ybt">
 <ClientScriptStep client="webClient" engine="web" id="_6wq3" interpreter="groovy" name="Determine servername">
-<code>def maxRetries = 30;
-def interval = 500; // in milliseconds
+<code>rc.setLocal("servername", "undefined")
+
+def maxRetries = 20;
+def interval = 1000; // in milliseconds
+
+def servername = ""
+def jproAppNode = rc.getComponent("genericDocument").getElementsByTagName("jpro-app")[0]
 
 for (int i = 0; i &lt; maxRetries; i++) {
-    def jproAppNode = rc.getComponent("genericDocument").getElementsByTagName("jpro-app")[0]
-    def servername = jproAppNode ? jproAppNode.getAttributeJS("data-server-name") : ""
+    servername = jproAppNode ? jproAppNode.getAttributeJS("data-server-name") : ""
     
-    if(servername == "") {
-      throw new Exception("Couldn't find data-server-name")   
+    if(servername == null || servername == "") {
+        Thread.sleep(interval);
     } else {
+        rc.logMessage("Found servername: " + servername)
         rc.setLocal("servername", servername)
-        Thread.sleep(interval);        
+        rc.check(i &lt; 10, "Getting servername should take less than 10 second. it took " + i + " seconds.")
+        break;
     }
-
+}
+if(servername == "") {
+    rc.logMessage("Didn't find servername")
+    rc.check(false, "Couldn't find servername")
+    Thread.sleep(interval);
 }
 
 </code>
