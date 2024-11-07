@@ -80,6 +80,8 @@ jpro {
 
     openingPath = ""
 
+    javafxVersion = "21"
+
     openURLOnStartup = false
 }
 

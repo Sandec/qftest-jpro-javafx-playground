@@ -2,7 +2,9 @@
 <!DOCTYPE RootStep>
 <RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
 <include>qfs.qft</include>
-<variable name="JProServerStartupMessage">Listening for HTTP on</variable>
+<variable name="JProServerStartupMessage">Tomcat started on port</variable>
+<variable name="engine">fx</variable>
+<variable name="client">jproClient</variable>
 <variable name="url">http://localhost:8080</variable>
 <DependencyReference id="_2YLC" reference="dependencies.JProDemoGestartet"/>
 <TestSet id="_6" name="Base Test Group">
@@ -39,9 +41,9 @@
 <variable name="clicktype">semihard</variable>
 </ProcedureCall>
 </BasicSequence>
-<MouseEventStep clicks="1" client="JProServer" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_2YXx" modifiers="16" x="26" y="19"/>
-<MouseEventStep clicks="1" client="JProServer" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_2YXy" modifiers="16"/>
-<CheckStringStep client="JProServer" component="#Label:name=label1" id="_2YXz">
+<MouseEventStep clicks="1" client="$(client)" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_2YXx" modifiers="16" x="26" y="19"/>
+<MouseEventStep clicks="1" client="$(client)" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_2YXy" modifiers="16"/>
+<CheckStringStep client="$(client)" component="#Label:name=label1" id="_2YXz">
 <text>Welcome to FXML and JPro!</text>
 </CheckStringStep>
 </TestCase>
@@ -54,18 +56,9 @@
 <variable name="JProServer">JPro</variable>
 <variable name="JProServerStartupMessage"/>
 <SetupSequence id="_2YO6" name="Start JProServer">
-<IfSequence id="_2YbU" test="&#34;$(variant)&#34;==&#34;web&#34;">
-<SetGlobalStep id="_2YbV" local="true" varname="jobname">
-<default>jproRun</default>
-</SetGlobalStep>
-<ElseSequence id="_2YbW">
-<SetGlobalStep id="_2YbX" local="true" varname="jobname">
-<default>run</default>
-</SetGlobalStep>
-</ElseSequence>
-</IfSequence>
-<ClientWaiter client="JProServer" id="_2YZe" local="true" raise="false" resvarname="isConnected" timeout="0"/>
-<ShellClientStarter client="JProServer" command="java -jar jpro-loadbalancer-0.14.0-SNAPSHOT.jar" directory="../runtime" id="_2Ybp"/>
+<ClientWaiter client="JProServers" id="_2YZe" local="true" raise="false" resvarname="isConnected" timeout="0"/>
+<IfSequence id="_6wqN" interpreter="groovy" test="!$(isConnected)">
+<ShellClientStarter client="JProServers" command="java -jar jpro-loadbalancer-0.14.0-SNAPSHOT.jar" directory="../runtime" id="_2Ybp"/>
 <ProcedureCall disabled="true" id="_2YOK" procedure="qfs.utils.waitForClientOutput">
 <variable name="client">JProServer</variable>
 <variable name="expectedOutput">$(JProServerStartupMessage)</variable>
@@ -73,15 +66,18 @@
 <variable name="polling">100</variable>
 </ProcedureCall>
 <IfSequence id="_2YOJ" name="Wait for server startup" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<BasicSequence id="_2Ybr">
 <ProcedureCall id="_2YbQ" procedure="qfs.utils.waitForClientOutput">
-<variable name="client">JProServer</variable>
+<variable name="client">JProServers</variable>
 <variable name="expectedOutput">$(JProServerStartupMessage)</variable>
 <variable name="timeout">${default:timeout:60000}</variable>
 <variable name="polling">1000</variable>
 </ProcedureCall>
+</BasicSequence>
 <ElseSequence id="_2YOL">
 <ClientWaiter client="JProServer" id="_2YbY"/>
 </ElseSequence>
+</IfSequence>
 </IfSequence>
 </SetupSequence>
 <CleanupSequence id="_2YRQ">
@@ -197,8 +193,48 @@ Client.instance().setForeignPlayback(None)</code>
 <variable name="connected">false</variable>
 <variable name="newclient">false</variable>
 <IfSequence id="_2YbP" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<BasicSequence id="_2Ybt">
+<ShellClientStarter client="client" command="echo 1" id="_6wqK" predelay="4000"/>
+<ClientScriptStep client="webClient" engine="web" id="_6wq3" interpreter="groovy" name="Determine servername">
+<code>def jproAppNode = rc.getComponent("genericDocument").getElementsByTagName("jpro-app")[0]
+def servername = jproAppNode ? jproAppNode.getAttributeJS("data-server-name") : ""
+
+if(servername == "") {
+  throw new Exception("Couldn't find data-server-name")   
+}
+
+rc.setLocal("servername", servername)</code>
+</ClientScriptStep>
+<IfSequence id="_6wq6" name="Determine corresponding JPro client" test="&#34;$(servername)&#34; != &#34;&#34;">
+<RepeatSequence count="$[len(rc.getStr(&#34;qftest&#34;,&#34;clients&#34;).split(&#34;\n&#34;))]" id="_6wqA" name="Test all clients" var="clientIndex">
+<SetGlobalStep id="_6wqD" local="true" varname="candidate">
+<default>$[rc.getStr("qftest","clients").split("\n")[rc.getInt("clientIndex")]]</default>
+</SetGlobalStep>
+<TryStep id="_6wqE" name="Try to get servername from client process">
+<ClientScriptStep client="$(candidate)" engine="fx" id="_6wqH" interpreter="groovy" name="get servername of client from system properties">
+<code>def prop = System.getProperty("jpro.servername")
+println("servername is: " + prop)
+if (prop &amp;&amp; prop == rc.getStr("servername")) {
+    rc.setGlobal("JProServer", rc.getStr("candidate"))
+    throw new BreakException() // done
+}</code>
+</ClientScriptStep>
+<CatchSequence exception="TestException" id="_6wqF" maxerror="0">
+<CommentStep id="_6wqG">
+<heading>Not a FX client...</heading>
+</CommentStep>
+</CatchSequence>
+</TryStep>
+</RepeatSequence>
+<ElseSequence id="_6wq7" name="Use default client name">
+<ThrowStep id="_6wqL" throwmessage="JProServer not found"/>
+</ElseSequence>
+</IfSequence>
+<SetGlobalStep id="_6wqI" varname="client">
+<default>$(JProServer)</default>
+</SetGlobalStep>
 <TryStep id="_2YVX" name="Prüfen, ob bereits eine Verbindung zwischen FX und Web Client besteht $(engine)">
-<ClientWaiter client="$(client)" engine="$(engine)" id="_2YVY" timeout="0"/>
+<ClientWaiter client="$(client)" engine="$(engine)" id="_2YVY"/>
 <ClientScriptStep client="$(client)" engine="$(engine)" id="_2YVZ">
 <code>from de.qfs.apps.qftest.client import Client
 webClient = Client.instance().getForeignPlayback()
@@ -220,42 +256,21 @@ rc.setLocal("connected", str(webClient) == rc.lookup("_webclientInfo"))
 </SetGlobalStep>
 </CatchSequence>
 </TryStep>
+</BasicSequence>
 <IfSequence id="_2YVd" test="not $(connected)">
 <BasicSequence id="_2YVe" name="FX und Web Client miteinander verbinden">
 <CommentStep id="_2YVf">
 <heading>Warten, bis FX Client bereit ist</heading>
 </CommentStep>
-<ClientWaiter client="$(client)" engine="$(engine)" id="_2YVg"/>
-<IfSequence id="_2YVh" name="Neue Verbindung herstellen?" test="not $(newclient)">
-<CommentStep id="_2YVi">
-<heading>Für JPro aktuell nicht relevant</heading>
-</CommentStep>
-<TryStep disabled="true" id="_2YVj" name="Falls ein alter FX Client durch einen neuen ersetzt wurde, den neuen Client umbenennen">
-<ClientWaiter client="$(client):2" engine="$(engine)" id="_2YVk"/>
-<ServerScriptStep id="_2YVl" postdelay="6000">
-<code>from de.qfs.apps.qftest.run import TestServerImpl
-ts = TestServerImpl.instance()
-ts.exitClient(rc.lookup("client"), rc.context)
-</code>
-</ServerScriptStep>
-<ProcedureCall id="_2YVm" procedure="qfs.client.renameClient">
-<variable name="oldName">$(client):2</variable>
+<ClientWaiter client="$(client)" engine="$(engine)" id="_2YVg" timeout="0"/>
+<SetGlobalStep disabled="true" id="_6wqM" varname="client">
+<default>$(JProServer)</default>
+</SetGlobalStep>
+<ProcedureCall disabled="true" id="_6wqJ" procedure="qfs.client.renameClient">
+<variable name="oldName">$(JProServer)</variable>
 <variable name="newName">$(client)</variable>
 <variable name="trueName">$$(client)</variable>
 </ProcedureCall>
-<CatchSequence exception="ClientNotConnectedException" id="_2YVn" maxerror="0"/>
-</TryStep>
-<ElseSequence id="_2YVo">
-<CommentStep id="_2YVp">
-<heading>Technisches Detail - Sicher stellen, dass Events für $(client) aufgenommen werden</heading>
-</CommentStep>
-<ProcedureCall id="_2YVq" procedure="qfs.client.renameClient">
-<variable name="oldName">$(client)</variable>
-<variable name="newName">$(client)</variable>
-<variable name="trueName">$$(client)</variable>
-</ProcedureCall>
-</ElseSequence>
-</IfSequence>
 <BasicSequence id="_2YVr" name="Verbinden der beiden Clients">
 <ServerScriptStep id="_2YVs" name="Verknüpfen der beiden Engines">
 <code>from de.qfs.apps.qftest.run import TestServerImpl
