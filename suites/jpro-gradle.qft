@@ -13,23 +13,26 @@
 <TestSet id="_1" name="Base Test Group">
 <DataDriver id="_2YZg" loopreportname="Test: $(variant) $(browser) $(os)">
 <TableDataBinder id="_2YZh" name="variants">
-<TableBinderColumn title="variant" width="145">
+<TableBinderColumn title="variant" width="137">
 <data>web</data>
 <data>web</data>
 <data>web</data>
 <data>web</data>
+<data>desktop</data>
 </TableBinderColumn>
-<TableBinderColumn title="browser" width="157">
+<TableBinderColumn title="browser" width="148">
 <data>chrome</data>
 <data>firefox</data>
 <data>edge</data>
 <data>safari</data>
+<data/>
 </TableBinderColumn>
-<TableBinderColumn title="os" width="590">
+<TableBinderColumn title="os" width="556">
 <data>windows,linux,macos</data>
 <data>windows,linux</data>
 <data>windows</data>
 <data>macos</data>
+<data>windows,linux,macos</data>
 </TableBinderColumn>
 </TableDataBinder>
 </DataDriver>

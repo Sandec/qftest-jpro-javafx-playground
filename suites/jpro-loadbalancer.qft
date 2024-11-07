@@ -33,7 +33,7 @@
 </DataDriver>
 <TestSet id="_2YZk" name="TheTests $(variant) $(browser) $(os)">
 <comment>'$(os)' == '${qftest:os.name}'</comment>
-<TestCase condition="rc.callProcedure(&#34;runOnSystem&#34;, [&#34;os&#34; : &#34;$(os)&#34;])" id="_2YXt" interpreter="groovy" name="Click Button and test">
+<TestCase condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_2YXt" interpreter="groovy" name="Click Button and test">
 <BasicSequence id="_2YXu" name="Setze Event-Optionen">
 <ProcedureCall id="_2YXv" procedure="qfs.jib.options.replayFXHardMouseEventAs">
 <variable name="clicktype">hard</variable>
@@ -331,7 +331,7 @@ rc.setOption(Options.OPT_PLAY_LINUX_FORCED_RAISE_WITH_TOPMOST, false)</code>
 @param os - the operating system to check for
 @returns true if the specified os meets the running os, false otherwhise</comment>
 <ServerScriptStep id="_2Ybj" interpreter="groovy">
-<code>def os = rc.lookup("os")
+<code>def os = rc.getStr("os")
 def runOnSystem = false
 if (os.contains("macos") &amp;&amp; rc.getBool("qftest","macOS")) {
     runOnSystem = true
@@ -342,6 +342,13 @@ if (os.contains("windows") &amp;&amp; rc.getBool("qftest","windows")){
 if (os.contains("linux") &amp;&amp; rc.getBool("qftest","linux")){
     runOnSystem = true
 }
+
+// Firefox &amp; Safari only supported with webdriver
+def browser = rc.getStr("browser")
+if (runOnSystem &amp;&amp; (browser == "firefox" || browser == "safari")) {
+    runOnSystem = rc.getStr("webmode") == "webdriver"
+}
+
 rc.setLocal("runOnSystem",runOnSystem)</code>
 </ServerScriptStep>
 <ReturnStep id="_2Ybo" retval="$(runOnSystem)"/>
