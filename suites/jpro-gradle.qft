@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE RootStep>
-<RootStep id="_0" indentation="0" linelength="160" name="root"
-          signature="302C0214524614F4B8A4B1ACE20EF86E38F18E91498E0C6B021433AE915A9431FC3238B86BADD40B7040B1D580E3" version="8.1.0">
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
 <include>qfs.qft</include>
-<variable name="variant">web</variable>
 <variable name="JProServerStartupMessage">Listening for HTTP on</variable>
 <variable name="url">http://localhost:8080</variable>
 <variable name="browser">chrome</variable>
@@ -15,22 +13,19 @@
 <TestSet id="_1" name="Base Test Group">
 <DataDriver id="_2YZg" loopreportname="Test: $(variant) $(browser) $(os)">
 <TableDataBinder id="_2YZh" name="variants">
-<TableBinderColumn title="variant" width="153">
-<data>desktop</data>
+<TableBinderColumn title="variant" width="145">
 <data>web</data>
 <data>web</data>
 <data>web</data>
 <data>web</data>
 </TableBinderColumn>
-<TableBinderColumn title="browser" width="165">
-<data/>
+<TableBinderColumn title="browser" width="157">
 <data>chrome</data>
 <data>firefox</data>
 <data>edge</data>
 <data>safari</data>
 </TableBinderColumn>
-<TableBinderColumn title="os" width="623">
-<data>windows,macos,linux</data>
+<TableBinderColumn title="os" width="590">
 <data>windows,linux,macos</data>
 <data>windows,linux</data>
 <data>windows</data>

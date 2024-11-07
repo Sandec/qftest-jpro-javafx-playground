@@ -3,6 +3,7 @@
 <RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
 <include>qfs.qft</include>
 <variable name="JProServerStartupMessage">Tomcat started on port</variable>
+<variable name="webmode">cdpdriver</variable>
 <variable name="engine">fx</variable>
 <variable name="client">jproClient</variable>
 <variable name="url">http://localhost:8080</variable>
@@ -216,7 +217,7 @@ for (int i = 0; i &lt; maxRetries; i++) {
         break;
     }
 }
-if(servername == "") {
+if(servername == null || servername == "") {
     rc.logMessage("Didn't find servername")
     rc.check(false, "Couldn't find servername")
     Thread.sleep(interval);
