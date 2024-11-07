@@ -194,16 +194,24 @@ Client.instance().setForeignPlayback(None)</code>
 <variable name="newclient">false</variable>
 <IfSequence id="_2YbP" test="&#34;$(variant)&#34;==&#34;web&#34;">
 <BasicSequence id="_2Ybt">
-<ShellClientStarter client="client" command="echo 1" id="_6wqK" predelay="4000"/>
 <ClientScriptStep client="webClient" engine="web" id="_6wq3" interpreter="groovy" name="Determine servername">
-<code>def jproAppNode = rc.getComponent("genericDocument").getElementsByTagName("jpro-app")[0]
-def servername = jproAppNode ? jproAppNode.getAttributeJS("data-server-name") : ""
+<code>def maxRetries = 30;
+def interval = 500; // in milliseconds
 
-if(servername == "") {
-  throw new Exception("Couldn't find data-server-name")   
+for (int i = 0; i &lt; maxRetries; i++) {
+    def jproAppNode = rc.getComponent("genericDocument").getElementsByTagName("jpro-app")[0]
+    def servername = jproAppNode ? jproAppNode.getAttributeJS("data-server-name") : ""
+    
+    if(servername == "") {
+      throw new Exception("Couldn't find data-server-name")   
+    } else {
+        rc.setLocal("servername", servername)
+        Thread.sleep(interval);        
+    }
+
 }
 
-rc.setLocal("servername", servername)</code>
+</code>
 </ClientScriptStep>
 <IfSequence id="_6wq6" name="Determine corresponding JPro client" test="&#34;$(servername)&#34; != &#34;&#34;">
 <RepeatSequence count="$[len(rc.getStr(&#34;qftest&#34;,&#34;clients&#34;).split(&#34;\n&#34;))]" id="_6wqA" name="Test all clients" var="clientIndex">
