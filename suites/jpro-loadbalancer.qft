@@ -195,7 +195,7 @@ Client.instance().setForeignPlayback(None)</code>
 <IfSequence id="_2YbP" test="&#34;$(variant)&#34;==&#34;web&#34;">
 <BasicSequence id="_2Ybt">
 <ClientScriptStep client="webClient" engine="web" id="_6wq3" interpreter="groovy" name="Determine servername">
-<code>rc.setLocal("servername", "undefined")
+<code>rc.setLocal("servername", "")
 
 def maxRetries = 20;
 def interval = 1000; // in milliseconds
@@ -207,6 +207,7 @@ for (int i = 0; i &lt; maxRetries; i++) {
     servername = jproAppNode ? jproAppNode.getAttributeJS("data-server-name") : ""
     
     if(servername == null || servername == "") {
+        rc.logMessage("Sleep, i: " + i)
         Thread.sleep(interval);
     } else {
         rc.logMessage("Found servername: " + servername)
