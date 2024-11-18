@@ -181,7 +181,6 @@ Client.instance().setForeignPlayback(None)</code>
 </DependencyReference>
 <SetupSequence id="_2YVW" name="JPro FX Client und Web Client miteinander verbinden">
 <variable name="connected">false</variable>
-<variable name="newclient">false</variable>
 <IfSequence id="_2YbP" test="&#34;$(variant)&#34;==&#34;web&#34;">
 <ProcedureCall id="_6wqR" procedure="jpro-utils.qft#connectJProClient">
 <variable name="browserClient">webClient</variable>

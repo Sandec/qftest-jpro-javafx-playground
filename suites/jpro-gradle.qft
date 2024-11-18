@@ -213,91 +213,10 @@ Client.instance().setForeignPlayback(None)</code>
 </DependencyReference>
 <SetupSequence id="_2YVW" name="JPro FX Client und Web Client miteinander verbinden">
 <variable name="connected">false</variable>
-<variable name="newclient">false</variable>
 <IfSequence id="_2YbP" test="&#34;$(variant)&#34;==&#34;web&#34;">
 <ProcedureCall id="_6wqR" procedure="jpro-utils.qft#connectJProClient">
 <variable name="browserClient">$(webClient)</variable>
 </ProcedureCall>
-<TryStep disabled="true" id="_2YVX" name="Prüfen, ob bereits eine Verbindung zwischen FX und Web Client besteht $(engine)">
-<ClientWaiter client="$(client)" engine="$(engine)" id="_2YVY" timeout="0"/>
-<ClientScriptStep client="$(client)" engine="$(engine)" id="_2YVZ">
-<code>from de.qfs.apps.qftest.client import Client
-webClient = Client.instance().getForeignPlayback()
-rc.logMessage("webClient: %s" % webClient)
-rc.setLocal("_webclientInfo", str(webClient))
-</code>
-</ClientScriptStep>
-<ServerScriptStep id="_2YVa">
-<code>from de.qfs.apps.qftest.run import TestServerImpl
-ts = TestServerImpl.instance()
-webClient = ts.getPlayback("webClient")
-rc.logMessage("webClient: %s" % webClient)
-rc.setLocal("connected", str(webClient) == rc.lookup("_webclientInfo"))
-</code>
-</ServerScriptStep>
-<CatchSequence exception="ClientNotConnectedException" id="_2YVb" maxerror="0">
-<SetGlobalStep id="_2YVc" local="true" varname="newclient">
-<default>true</default>
-</SetGlobalStep>
-</CatchSequence>
-</TryStep>
-<IfSequence disabled="true" id="_2YVd" test="not $(connected)">
-<BasicSequence id="_2YVe" name="FX und Web Client miteinander verbinden">
-<CommentStep id="_2YVf">
-<heading>Warten, bis FX Client bereit ist</heading>
-</CommentStep>
-<ClientWaiter client="$(client)" engine="$(engine)" id="_2YVg"/>
-<IfSequence id="_2YVh" name="Neue Verbindung herstellen?" test="not $(newclient)">
-<CommentStep id="_2YVi">
-<heading>Für JPro aktuell nicht relevant</heading>
-</CommentStep>
-<TryStep disabled="true" id="_2YVj" name="Falls ein alter FX Client durch einen neuen ersetzt wurde, den neuen Client umbenennen">
-<ClientWaiter client="$(client):2" engine="$(engine)" id="_2YVk"/>
-<ServerScriptStep id="_2YVl" postdelay="6000">
-<code>from de.qfs.apps.qftest.run import TestServerImpl
-ts = TestServerImpl.instance()
-ts.exitClient(rc.lookup("client"), rc.context)
-</code>
-</ServerScriptStep>
-<ProcedureCall id="_2YVm" procedure="qfs.client.renameClient">
-<variable name="oldName">$(client):2</variable>
-<variable name="newName">$(client)</variable>
-<variable name="trueName">$$(client)</variable>
-</ProcedureCall>
-<CatchSequence exception="ClientNotConnectedException" id="_2YVn" maxerror="0"/>
-</TryStep>
-<ElseSequence id="_2YVo">
-<CommentStep id="_2YVp">
-<heading>Technisches Detail - Sicher stellen, dass Events für $(client) aufgenommen werden</heading>
-</CommentStep>
-<ProcedureCall id="_2YVq" procedure="qfs.client.renameClient">
-<variable name="oldName">$(client)</variable>
-<variable name="newName">$(client)</variable>
-<variable name="trueName">$$(client)</variable>
-</ProcedureCall>
-</ElseSequence>
-</IfSequence>
-<BasicSequence id="_2YVr" name="Verbinden der beiden Clients">
-<ServerScriptStep id="_2YVs" name="Verknüpfen der beiden Engines">
-<code>from de.qfs.apps.qftest.run import TestServerImpl
-ts = TestServerImpl.instance()
-fxClient = ts.getPlayback(rc.lookup("client"))
-webClient = ts.getPlayback("webClient")
-fxClient.setForeignPlayback(webClient)
-rc.logMessage("FX client: %s, Web client: %s" % (fxClient, webClient))</code>
-</ServerScriptStep>
-<ClientScriptStep client="$(client)" engine="fx" id="_2YVt" interpreter="groovy" name="Spezielle interne Einstellungen für den FX Client">
-<code>rc.setOption(Options.OPT_FX_USE_AWT_ROBOT, false)
-rc.setOption(Options.OPT_PLAY_FORCED_RAISE_WITH_CONTROL, false)
-rc.setOption(Options.OPT_PLAY_LINUX_FORCED_RAISE_WITH_TOPMOST, false)</code>
-</ClientScriptStep>
-<ClientScriptStep client="webClient" engine="web" id="_2YVu" interpreter="groovy" name="Spezielle interne Einstellungen für den Web Client">
-<code>rc.setOption(Options.OPT_JIB_RECORD_WEB_FILTER_JIB_COMPONENTS, true)
-</code>
-</ClientScriptStep>
-</BasicSequence>
-</BasicSequence>
-</IfSequence>
 </IfSequence>
 <BasicSequence id="_2YXX" name="Setze Event-Optionen">
 <ProcedureCall id="_2YXY" procedure="qfs.jib.options.replayFXHardMouseEventAs">
