@@ -38,7 +38,23 @@
 </DataDriver>
 <TestSet condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_2YZk" interpreter="groovy" name="TheTests $(variant) $(browser) $(os)">
 <comment>'$(os)' == '${qftest:os.name}'</comment>
-<TestCase id="_2YXt" interpreter="groovy" name="Click Button and test">
+<TestCase id="_6wqT" interpreter="groovy" name="Click Button and test 1">
+<IfSequence id="_6wqU" test="test"/>
+<BasicSequence id="_6wqV" name="Setze Event-Optionen">
+<ProcedureCall id="_6wqW" procedure="qfs.jib.options.replayFXHardMouseEventAs">
+<variable name="clicktype">hard</variable>
+</ProcedureCall>
+<ProcedureCall id="_6wqX" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
+<variable name="clicktype">semihard</variable>
+</ProcedureCall>
+</BasicSequence>
+<MouseEventStep clicks="1" client="JProServer" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_6wqY" modifiers="16" x="26" y="19"/>
+<MouseEventStep clicks="1" client="JProServer" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_6wqZ" modifiers="16"/>
+<CheckStringStep client="JProServer" component="#Label:name=label1" id="_6wqa">
+<text>Welcome to FXML and JPro!</text>
+</CheckStringStep>
+</TestCase>
+<TestCase id="_2YXt" interpreter="groovy" name="Click Button and test 2">
 <IfSequence id="_6wqS" test="test"/>
 <BasicSequence id="_2YXu" name="Setze Event-Optionen">
 <ProcedureCall id="_2YXv" procedure="qfs.jib.options.replayFXHardMouseEventAs">
@@ -91,8 +107,9 @@ rc.setLocal("runOnSystem",runOnSystem)</code>
 <ReturnStep id="_2Ybo" retval="$(runOnSystem)"/>
 </Procedure>
 <Package id="_2YHr" name="dependencies">
-<Dependency forcedcleanup="true" id="_2YO5" name="JProServerStarted">
+<Dependency id="_2YO5" name="JProServerStarted">
 <discriminator>jobname</discriminator>
+<discriminator>variant</discriminator>
 <variable name="JProServer">JPro</variable>
 <variable name="JProServerStartupMessage"/>
 <SetupSequence id="_2YO6" name="Start JProServer">
