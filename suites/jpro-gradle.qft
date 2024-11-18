@@ -36,7 +36,7 @@
 </TableBinderColumn>
 </TableDataBinder>
 </DataDriver>
-<TestSet condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_2YZk" name="TheTests $(variant) $(browser) $(os)">
+<TestSet condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_2YZk" interpreter="groovy" name="TheTests $(variant) $(browser) $(os)">
 <comment>'$(os)' == '${qftest:os.name}'</comment>
 <TestCase id="_2YXt" interpreter="groovy" name="Click Button and test">
 <IfSequence id="_6wqS" test="test"/>
