@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE RootStep>
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
+<include>qfs.qft</include>
+<TestSet id="_1" name="unnamed">
+<TestCase id="_2" name="unnamed"/>
+</TestSet>
+<PackageRoot id="_3">
+<Procedure id="_6wqP" name="waitForServer">
+<variable name="url"/>
+<comment>Waits for Server to be alive.</comment>
+<ServerScriptStep id="_6wqy" interpreter="groovy" name="Wait for Server $(url)">
+<code>int timeout = 60000  // 60 seconds in milliseconds
+int interval = 5000  // Check every 5 seconds
+long startTime = System.currentTimeMillis()
+boolean responsePositive = false
+String urlString = rc.lookup("url") + "/alive"
+
+while (System.currentTimeMillis() - startTime &lt; timeout) {
+    try {
+        // Send HTTP request to check response
+        def url = new URL(urlString)
+        def connection = url.openConnection()
+        connection.setRequestMethod("GET")
+        int responseCode = connection.responseCode
+        
+        if (responseCode == 200) {  // Assuming HTTP 200 means a positive response
+            responsePositive = true
+            break
+        }
+    } catch (Exception e) {
+        // Catch any exception, e.g., if server is unreachable, and try again
+        sleep(1000)
+    }
+    
+    // Wait for the interval before trying again
+    Thread.sleep(interval)
+}
+
+if (responsePositive) {
+    // Response was positive, perform desired action
+    rc.logMessage("Page responded positively after " + (System.currentTimeMillis() - startTime) + " milliseconds.")
+} else {
+    // Timeout reached without positive response
+    throw new TestException("Page did not respond positively within the timeout.")
+}</code>
+</ServerScriptStep>
+</Procedure>
+<Procedure id="_6wqO" name="openBrowser">
+<variable name="browser"/>
+<variable name="url"/>
+<variable name="webmode">auto</variable>
+</Procedure>
+<Procedure id="_6" name="connectJProClient">
+<variable name="browserClient"/>
+<comment>A usable client is put in the client variable.</comment>
+<ClientScriptStep client="$(browserClient)" engine="web" id="_6wq3" interpreter="groovy" name="Determine servername">
+<code>import java.time.Instant;
+
+rc.setLocal("servername", "");
+
+def maxRetries = 200;
+def interval = 100; // in milliseconds
+
+def servername = "";
+Instant startTime = Instant.now();
+def document = rc.getComponent("genericDocument");
+
+for (int i = 0; i &lt; maxRetries; i++) {
+    def jproAppNode = document.getElementsByTagName("jpro-app")[0];
+    servername = jproAppNode ? jproAppNode.getAttributeJS("data-server-name") : "";
+    
+    if (servername == null || servername.isEmpty()) {
+        Thread.sleep(interval);
+    } else {
+        Instant endTime = Instant.now();
+        long elapsedMillis = java.time.Duration.between(startTime, endTime).toMillis();
+
+        rc.logMessage("Found servername: " + servername);
+        rc.logMessage("Time taken to find servername: " + elapsedMillis + " milliseconds");
+        
+        rc.setLocal("servername", servername);
+        rc.check(i &lt; 10, "Getting servername should take less than 10 seconds. It took " + (elapsedMillis / 1000) + " seconds.");
+        break;
+    }
+}
+
+if (servername == null || servername.isEmpty()) {
+    rc.logMessage("Didn't find servername");
+    rc.logMessage("&lt;jpro-app&gt;: " + rc.getComponent("genericDocument").getElementsByTagName("jpro-app")[0]);
+    rc.check(false, "Couldn't find servername");
+}</code>
+</ClientScriptStep>
+<RepeatSequence count="$[len(rc.getStr(&#34;qftest&#34;,&#34;clients&#34;).split(&#34;\n&#34;))]" id="_6wqA" name="Test all clients" var="clientIndex">
+<SetGlobalStep id="_6wqD" local="true" varname="candidate">
+<default>$[rc.getStr("qftest","clients").split("\n")[rc.getInt("clientIndex")]]</default>
+</SetGlobalStep>
+<TryStep id="_6wqE" name="Try to get servername from client process">
+<ClientScriptStep client="$(candidate)" engine="fx" id="_6wqH" interpreter="groovy" name="get servername of client from system properties">
+<code>def prop = System.getProperty("jpro.servername")
+println("servername is: " + prop)
+if (prop &amp;&amp; prop == rc.getStr("servername")) {
+    rc.setGlobal("JProServer", rc.getStr("candidate"))
+    throw new BreakException() // done
+}</code>
+</ClientScriptStep>
+<CatchSequence exception="TestException" id="_6wqF" maxerror="0">
+<CommentStep id="_6wqG">
+<heading>Not a FX client...</heading>
+</CommentStep>
+</CatchSequence>
+</TryStep>
+</RepeatSequence>
+<SetGlobalStep id="_6wqI" varname="client">
+<default>$(JProServer)</default>
+</SetGlobalStep>
+<TryStep id="_2YVX" name="Prüfen, ob bereits eine Verbindung zwischen FX und Web Client besteht $(engine)">
+<ClientWaiter client="$(client)" engine="$(engine)" id="_2YVY"/>
+<ClientScriptStep client="$(client)" engine="$(engine)" id="_2YVZ">
+<code>from de.qfs.apps.qftest.client import Client
+webClient = Client.instance().getForeignPlayback()
+rc.logMessage("webClient: %s" % webClient)
+rc.setLocal("_webclientInfo", str(webClient))
+</code>
+</ClientScriptStep>
+<ServerScriptStep id="_2YVa">
+<code>from de.qfs.apps.qftest.run import TestServerImpl
+ts = TestServerImpl.instance()
+webClient = ts.getPlayback("webClient")
+rc.logMessage("webClient: %s" % webClient)
+rc.setLocal("connected", str(webClient) == rc.lookup("_webclientInfo"))
+</code>
+</ServerScriptStep>
+<CatchSequence exception="ClientNotConnectedException" id="_2YVb" maxerror="0">
+<SetGlobalStep id="_2YVc" local="true" varname="newclient">
+<default>true</default>
+</SetGlobalStep>
+</CatchSequence>
+</TryStep>
+<BasicSequence id="_2YVr" name="Verbinden der beiden Clients">
+<ServerScriptStep id="_2YVs" name="Verknüpfen der beiden Engines">
+<code>from de.qfs.apps.qftest.run import TestServerImpl
+ts = TestServerImpl.instance()
+fxClient = ts.getPlayback(rc.lookup("client"))
+webClient = ts.getPlayback(rc.lookup("browserClient"))
+fxClient.setForeignPlayback(webClient)
+rc.logMessage("FX client: %s, Web client: %s" % (fxClient, webClient))</code>
+</ServerScriptStep>
+<ClientScriptStep client="$(client)" engine="fx" id="_2YVt" interpreter="groovy" name="Spezielle interne Einstellungen für den FX Client">
+<code>rc.setOption(Options.OPT_FX_USE_AWT_ROBOT, false)
+rc.setOption(Options.OPT_PLAY_FORCED_RAISE_WITH_CONTROL, false)
+rc.setOption(Options.OPT_PLAY_LINUX_FORCED_RAISE_WITH_TOPMOST, false)</code>
+</ClientScriptStep>
+<ClientScriptStep client="$(browserClient)" engine="web" id="_2YVu" interpreter="groovy" name="Spezielle interne Einstellungen für den Web Client">
+<code>rc.setOption(Options.OPT_JIB_RECORD_WEB_FILTER_JIB_COMPONENTS, true)
+</code>
+</ClientScriptStep>
+</BasicSequence>
+</Procedure>
+</PackageRoot>
+<ExtraSequence id="_4">
+<CommentStep id="_2YZi">
+<heading>Can we refer to the Data Table?</heading>
+</CommentStep>
+<TableDataBinder id="_2YZh" name="variants">
+<TableBinderColumn title="variant" width="137">
+<data>web</data>
+<data>web</data>
+<data>web</data>
+<data>web</data>
+<data>desktop</data>
+</TableBinderColumn>
+<TableBinderColumn title="browser" width="148">
+<data>chrome</data>
+<data>firefox</data>
+<data>edge</data>
+<data>safari</data>
+<data/>
+</TableBinderColumn>
+<TableBinderColumn title="os" width="556">
+<data>windows,linux,macos</data>
+<data>windows,linux</data>
+<data>windows</data>
+<data>macos</data>
+<data>windows,linux,macos</data>
+</TableBinderColumn>
+</TableDataBinder>
+</ExtraSequence>
+<WindowList id="_5"/>
+</RootStep>

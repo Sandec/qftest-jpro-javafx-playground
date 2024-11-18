@@ -2,6 +2,7 @@
 <!DOCTYPE RootStep>
 <RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
 <include>qfs.qft</include>
+<reference>jpro-utils.qft</reference>
 <variable name="JProServerStartupMessage">Listening for HTTP on</variable>
 <variable name="url">http://localhost:8080</variable>
 <variable name="browser">chrome</variable>
@@ -13,25 +14,25 @@
 <TestSet id="_1" name="Base Test Group">
 <DataDriver id="_2YZg" loopreportname="Test: $(variant) $(browser) $(os)">
 <TableDataBinder id="_2YZh" name="variants">
-<TableBinderColumn title="variant" width="137">
+<TableBinderColumn title="variant" width="168">
 <data>web</data>
 <data>web</data>
 <data>web</data>
 <data>web</data>
 <data>desktop</data>
 </TableBinderColumn>
-<TableBinderColumn title="browser" width="148">
+<TableBinderColumn title="browser" width="179">
 <data>chrome</data>
+<data>safari</data>
 <data>firefox</data>
 <data>edge</data>
-<data>safari</data>
 <data/>
 </TableBinderColumn>
-<TableBinderColumn title="os" width="556">
+<TableBinderColumn title="os" width="587">
 <data>windows,linux,macos</data>
+<data>macos</data>
 <data>windows,linux</data>
 <data>windows</data>
-<data>macos</data>
 <data>windows,linux,macos</data>
 </TableBinderColumn>
 </TableDataBinder>
@@ -65,6 +66,9 @@
 <ServerScriptStep id="_2Ybj" interpreter="groovy">
 <code>def os = rc.getStr("os")
 def runOnSystem = false
+
+rc.logMessage("os.contains(macos): " + os.contains("macos"))
+
 if (os.contains("macos") &amp;&amp; rc.getBool("qftest","macOS")) {
     runOnSystem = true
 }
@@ -78,7 +82,8 @@ if (os.contains("linux") &amp;&amp; rc.getBool("qftest","linux")){
 // Firefox &amp; Safari only supported with webdriver
 def browser = rc.getStr("browser")
 if (runOnSystem &amp;&amp; (browser == "firefox" || browser == "safari")) {
-    runOnSystem = rc.getStr("webmode") == "webdriver"
+    //runOnSystem = rc.getStr("webmode") == "webdriver"
+  //  rc.setGlobal("webmode", "webdriver")
 }
 
 rc.setLocal("runOnSystem",runOnSystem)</code>
@@ -104,9 +109,9 @@ rc.setLocal("runOnSystem",runOnSystem)</code>
 <ClientWaiter client="JProServer" id="_2YZe" local="true" raise="false" resvarname="isConnected" timeout="0"/>
 <IfSequence id="_2YZf" interpreter="groovy" test="!$(isConnected)">
 <IfSequence id="_1pP7" name="Windows" test="${qftest:windows}">
-<ShellClientStarter client="JProServer" command="gradlew.bat $(jobname)" directory=".." id="_2YXs"/>
+<ShellClientStarter client="JProServer" command="gradlew.bat --no-daemon $(jobname)" directory=".." id="_2YXs"/>
 <ElseSequence id="_1pP9" name="macOS, Linux">
-<ShellClientStarter client="JProServer" command="./gradlew $(jobname)" directory=".." id="_2YWX"/>
+<ShellClientStarter client="JProServer" command="./gradlew --no-daemon $(jobname)" directory=".." id="_2YWX"/>
 </ElseSequence>
 </IfSequence>
 </IfSequence>
@@ -241,7 +246,10 @@ Client.instance().setForeignPlayback(None)</code>
 <variable name="connected">false</variable>
 <variable name="newclient">false</variable>
 <IfSequence id="_2YbP" test="&#34;$(variant)&#34;==&#34;web&#34;">
-<TryStep id="_2YVX" name="Prüfen, ob bereits eine Verbindung zwischen FX und Web Client besteht $(engine)">
+<ProcedureCall id="_6wqR" procedure="jpro-utils.qft#connectJProClient">
+<variable name="browserClient">webClient</variable>
+</ProcedureCall>
+<TryStep disabled="true" id="_2YVX" name="Prüfen, ob bereits eine Verbindung zwischen FX und Web Client besteht $(engine)">
 <ClientWaiter client="$(client)" engine="$(engine)" id="_2YVY" timeout="0"/>
 <ClientScriptStep client="$(client)" engine="$(engine)" id="_2YVZ">
 <code>from de.qfs.apps.qftest.client import Client
@@ -264,7 +272,7 @@ rc.setLocal("connected", str(webClient) == rc.lookup("_webclientInfo"))
 </SetGlobalStep>
 </CatchSequence>
 </TryStep>
-<IfSequence id="_2YVd" test="not $(connected)">
+<IfSequence disabled="true" id="_2YVd" test="not $(connected)">
 <BasicSequence id="_2YVe" name="FX und Web Client miteinander verbinden">
 <CommentStep id="_2YVf">
 <heading>Warten, bis FX Client bereit ist</heading>
