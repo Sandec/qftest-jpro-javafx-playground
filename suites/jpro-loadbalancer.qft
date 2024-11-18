@@ -5,28 +5,27 @@
 <reference>jpro-utils.qft</reference>
 <variable name="JProServerStartupMessage">Tomcat started on port</variable>
 <variable name="webmode">cdpdriver</variable>
-<variable name="engine">fx</variable>
 <variable name="client">jproClient</variable>
 <variable name="url">http://localhost:8080</variable>
-<DependencyReference id="_2YLC" reference="dependencies.JProDemoGestartet"/>
+<DependencyReference id="_2YLC" reference="dependencies.ConnectClient"/>
 <TestSet id="_6" name="Base Test Group">
 <DataDriver id="_2YZg">
 <TableDataBinder id="_2YZh" name="variants">
-<TableBinderColumn title="variant" width="163">
+<TableBinderColumn title="variant" width="152">
 <data>web</data>
 <data>web</data>
 <data>web</data>
 <data>web</data>
 </TableBinderColumn>
-<TableBinderColumn title="browser" width="176">
-<data>safari</data>
+<TableBinderColumn title="browser" width="164">
 <data>chrome</data>
+<data>safari</data>
 <data>firefox</data>
 <data>edge</data>
 </TableBinderColumn>
-<TableBinderColumn title="os" width="595">
-<data>macos</data>
+<TableBinderColumn title="os" width="550">
 <data>windows,linux,macos</data>
+<data>macos</data>
 <data>windows,linux</data>
 <data>windows</data>
 </TableBinderColumn>
@@ -115,7 +114,7 @@ Works both, with and without the JPro Loadbalancer.</comment>
 </ProcedureCall>
 </BasicSequence>
 <ElseSequence id="_2YOL">
-<ClientWaiter client="JProServer" id="_2YbY"/>
+<ClientWaiter client="JProServers" id="_2YbY"/>
 </ElseSequence>
 </IfSequence>
 </IfSequence>
@@ -125,76 +124,24 @@ Works both, with and without the JPro Loadbalancer.</comment>
 <ProcessWaiter client="JProServers" id="_2YTh" timeout="15000"/>
 </CleanupSequence>
 </Dependency>
-<Dependency forcedcleanup="true" id="_2YOR" name="OpenBrowser">
+<Dependency forcedcleanup="true" id="_6wqh" name="ConnectClient">
 <discriminator>browser</discriminator>
-<CommentStep id="_2YRF">
+<discriminator>webmode</discriminator>
+<CommentStep id="_6wqi">
 <heading>Zunächst muss der JPro Server gestartet werden</heading>
 </CommentStep>
-<DependencyReference id="_2YTe" reference="dependencies.JProServerStarted"/>
-<SetupSequence id="_2YPI" name="Browser bei Bedarf starten">
-<IfSequence id="_2YbM" interpreter="groovy" test="&#34;$(variant)&#34;==&#34;web&#34;">
-<TryStep id="_2YPq" name="Client gestartet?">
-<ProcedureCall id="_6wqg" procedure="jpro-utils.qft#openBrowser" retvarname="webClient">
-<variable name="url">$(url)</variable>
+<DependencyReference id="_6wqj" reference="dependencies.JProServerStarted"/>
+<SetupSequence id="_6wqk" name="Browser bei Bedarf starten">
+<ProcedureCall id="_6wql" procedure="jpro-utils.qft#connectFXClient">
+<variable name="fxClient">JProServers</variable>
 <variable name="browser">$(browser)</variable>
-<variable name="webmode">auto</variable>
+<variable name="url">$(url)</variable>
+<variable name="variant">$(variant)</variable>
 </ProcedureCall>
-</TryStep>
-</IfSequence>
 </SetupSequence>
-<CleanupSequence id="_2YOT" name="JPro Client beenden">
-<IfSequence id="_2YbN" test="&#34;$(variant)&#34;==&#34;web&#34;">
-<TryStep id="_2YOU" name="Verbindung zwischen Web und FX Clients lösen">
-<ClientWaiter client="$(client)" engine="fx" id="_2YOV" timeout="0"/>
-<ClientScriptStep client="$(client)" engine="fx" id="_2YOW">
-<code>from de.qfs.apps.qftest.client import Client
-Client.instance().setForeignPlayback(None)</code>
-</ClientScriptStep>
-<CatchSequence exception="ClientNotConnectedException" id="_2YOX" maxerror="0"/>
-</TryStep>
-<TryStep id="_2YS7" name="Browser schließen">
-<WindowEventStep client="webClient" component="genericDocument" event="WINDOW_CLOSING" id="_2YS8"/>
-<TryStep id="_2YS9" name="Browser beendet?">
-<ProcessWaiter client="webClient" id="_2YSB" timeout="10000"/>
-<CatchSequence exception="ClientNotTerminatedException" id="_2YSC" maxerror="0">
-<TryStep id="_2YSD" name="Browser hart beenden">
-<ClientStopper client="webClient" id="_2YSE"/>
-<ProcessWaiter client="webClient" id="_2YSF" timeout="10000"/>
-<CatchSequence exception="TestException" id="_2YSG" maxerror="0"/>
-</TryStep>
-</CatchSequence>
-</TryStep>
-<CatchSequence exception="TestException" id="_2YSH" maxerror="0"/>
-</TryStep>
-</IfSequence>
+<CleanupSequence id="_6wqm" name="JPro Client beenden">
+<ProcedureCall id="_6wqn" procedure="jpro-utils.qft#stopFXClient"/>
 </CleanupSequence>
-</Dependency>
-<Dependency id="_2YVT" name="JProDemoGestartet">
-<discriminator>engine</discriminator>
-<variable name="engine">fx</variable>
-<variable name="JProServer">JPro</variable>
-<CommentStep id="_2YVU">
-<heading>Zunächst müssen der JPro server und der Browser gestartet sein</heading>
-</CommentStep>
-<DependencyReference id="_2YVV" reference="dependencies.OpenBrowser">
-<variable name="height">900</variable>
-</DependencyReference>
-<SetupSequence id="_2YVW" name="JPro FX Client und Web Client miteinander verbinden">
-<variable name="connected">false</variable>
-<IfSequence id="_2YbP" test="&#34;$(variant)&#34;==&#34;web&#34;">
-<ProcedureCall id="_6wqR" procedure="jpro-utils.qft#connectJProClient">
-<variable name="browserClient">webClient</variable>
-</ProcedureCall>
-</IfSequence>
-<BasicSequence id="_2YXX" name="Setze Event-Optionen">
-<ProcedureCall id="_2YXY" procedure="qfs.jib.options.replayFXHardMouseEventAs">
-<variable name="clicktype">hard</variable>
-</ProcedureCall>
-<ProcedureCall id="_2YXZ" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
-<variable name="clicktype">semihard</variable>
-</ProcedureCall>
-</BasicSequence>
-</SetupSequence>
 </Dependency>
 </Package>
 <Procedure id="_2Yba" name="runOnSystem">
