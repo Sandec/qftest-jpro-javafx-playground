@@ -28,7 +28,7 @@
 <data/>
 </TableBinderColumn>
 <TableBinderColumn title="os" width="587">
-<data>windows,linux,macos</data>
+<data>windows,linux</data>
 <data>windows,linux,macos</data>
 <data>macos</data>
 <data>windows</data>
@@ -36,9 +36,10 @@
 </TableBinderColumn>
 </TableDataBinder>
 </DataDriver>
-<TestSet id="_2YZk" name="TheTests $(variant) $(browser) $(os)">
+<TestSet condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_2YZk" name="TheTests $(variant) $(browser) $(os)">
 <comment>'$(os)' == '${qftest:os.name}'</comment>
-<TestCase condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_2YXt" interpreter="groovy" name="Click Button and test">
+<TestCase id="_2YXt" interpreter="groovy" name="Click Button and test">
+<IfSequence id="_6wqS" test="test"/>
 <BasicSequence id="_2YXu" name="Setze Event-Optionen">
 <ProcedureCall id="_2YXv" procedure="qfs.jib.options.replayFXHardMouseEventAs">
 <variable name="clicktype">hard</variable>
