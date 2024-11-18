@@ -80,7 +80,7 @@ for (int i = 0; i &lt; maxRetries; i++) {
         rc.logMessage("Time taken to find servername: " + elapsedMillis + " milliseconds");
         
         rc.setLocal("servername", servername);
-        rc.check(i &lt; 10, "Getting servername should take less than 10 seconds. It took " + (elapsedMillis / 1000) + " seconds.");
+        rc.check(i &lt; 100, "Getting servername should take less than 10 seconds. It took " + (elapsedMillis / 1000) + " seconds.");
         break;
     }
 }

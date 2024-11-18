@@ -7,7 +7,6 @@
 <variable name="url">http://localhost:8080</variable>
 <variable name="browser">chrome</variable>
 <variable name="client">JProServer</variable>
-<variable name="url">http://localhost:8080</variable>
 <variable name="variant">web</variable>
 <variable name="webmode">cdpdriver</variable>
 <DependencyReference id="_2YLC" reference="dependencies.JProDemoGestartet"/>
@@ -22,16 +21,16 @@
 <data>desktop</data>
 </TableBinderColumn>
 <TableBinderColumn title="browser" width="179">
+<data>firefox</data>
 <data>chrome</data>
 <data>safari</data>
-<data>firefox</data>
 <data>edge</data>
 <data/>
 </TableBinderColumn>
 <TableBinderColumn title="os" width="587">
 <data>windows,linux,macos</data>
+<data>windows,linux,macos</data>
 <data>macos</data>
-<data>windows,linux</data>
 <data>windows</data>
 <data>windows,linux,macos</data>
 </TableBinderColumn>
@@ -83,7 +82,7 @@ if (os.contains("linux") &amp;&amp; rc.getBool("qftest","linux")){
 def browser = rc.getStr("browser")
 if (runOnSystem &amp;&amp; (browser == "firefox" || browser == "safari")) {
     //runOnSystem = rc.getStr("webmode") == "webdriver"
-  //  rc.setGlobal("webmode", "webdriver")
+    rc.setGlobal("webmode", "webdriver")
 }
 
 rc.setLocal("runOnSystem",runOnSystem)</code>
