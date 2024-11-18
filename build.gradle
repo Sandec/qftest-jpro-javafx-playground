@@ -106,6 +106,8 @@ qftest {
 
     reportDir = "$projectDir/qftest"
     runLogDir = "$projectDir/qftest"
+
+    cacheDir = File(System.getProperty("user.home"), ".qftest/cache").getAbsolutePath
 }
 
 test {
