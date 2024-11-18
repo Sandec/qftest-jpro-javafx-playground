@@ -47,9 +47,79 @@ if (responsePositive) {
 </ServerScriptStep>
 </Procedure>
 <Procedure id="_6wqO" name="openBrowser">
-<variable name="browser"/>
 <variable name="url"/>
+<variable name="browser">auto</variable>
 <variable name="webmode">auto</variable>
+<ServerScriptStep id="_2Ybj" interpreter="groovy" name="Set default values">
+<code>def os = rc.getStr("os")
+
+def browser = rc.getStr("browser")
+def webmode = rc.getStr("webmode")
+
+if(browser == "auto") {
+    browser = "chrome"
+    rc.setLocal("browser",browser)
+}
+
+if(webmode == "auto") {
+    if (browser == "firefox" || browser == "safari") {
+        rc.setLocal("webmode", "webdriver")   
+    } else {
+        rc.setLocal("webmode", "cdpdriver")          
+    }
+}
+</code>
+</ServerScriptStep>
+<LogMessageStep clientInfo="false" clientScreenshots="-1" dontcompact="false" errorlevel="1" id="_6wr9" report="false" screenshots="-1">
+<text>browser: $(browser), webdriver: $(webmode)</text>
+</LogMessageStep>
+<BasicSequence id="_3NC" name="Web-Engine starten">
+<BrowserClientStarter browser="$(browser)" client="webClient" connectionmode="${default:webmode:webdriver}" executable="${qftest:java}" id="_3ND"
+                      openwindow="false"/>
+<ClientWaiter client="webClient" id="_3NE"/>
+</BasicSequence>
+<BasicSequence id="_1pHV" name="Einstellungen für Browser setzen">
+<ProcedureCall id="_1pHW" procedure="qfs.web.browser.settings.doStartupSettings">
+<variable name="client">webClient</variable>
+<variable name="browser">$(browser)</variable>
+<variable name="emptyCache">true</variable>
+<variable name="enableCookies">true</variable>
+<variable name="deleteCookies">true</variable>
+<variable name="locale">de</variable>
+<variable name="enableProxy">false</variable>
+<variable name="proxyAddress"/>
+<variable name="proxyPort"/>
+<variable name="proxyAutoconfigurl"/>
+<variable name="enableProxyBypass">false</variable>
+<variable name="proxyBypass"/>
+<variable name="mozprofile"/>
+<variable name="compatibilitymode">no</variable>
+</ProcedureCall>
+</BasicSequence>
+<BasicSequence id="_1pHX" name="Browserfenster öffnen">
+<BrowserClientStarter browser="${default:browser:chrome}" client="webClient" executable="${qftest:java}" height="900" id="_1pHY" openwindow="true"
+                      url="$(url)"/>
+<DocumentWaiter client="webClient" component="genericDocument" id="_1pHZ" timeout="60000"/>
+</BasicSequence>
+<BasicSequence id="_1pHa" name="CustomWebResolver installieren">
+<InstallCWRStep client="webClient" engine="web" id="_2YPJ">
+<code>ignoreTags:
+- DIV
+- SPAN
+genericClasses: []</code>
+<comment>Mit einem CustomWebResolver übersetzen Sie die Spezifika
+der Komponenten Ihrer Webanwendung in generische Klassen,
+die QF-Test versteht.
+Dadurch werden die Komponentenerkennung drastisch verbessert
+und spezifischere Checks ermöglicht.
+Die wichtigste Kategorie ist "genericClasses". Hier können
+Sie HTML-Elemente generischen Klassen zuweisen anhand deren
+HTML-Tags, CSS-Klassen oder HTML-Attributen.
+Für weitere Informationen und Beispiele wählen Sie "Was ist
+das?" im Kontextmenü des Knotens.</comment>
+</InstallCWRStep>
+</BasicSequence>
+<ReturnStep id="_6wrA" retval="webClient"/>
 </Procedure>
 <Procedure id="_6" name="connectJProClient">
 <variable name="browserClient"/>
