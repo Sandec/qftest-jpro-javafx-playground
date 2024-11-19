@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE RootStep>
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
+<include>qfs.qft</include>
+<reference>jpro-utils.qft</reference>
+<variable name="JProServerStartupMessage">Tomcat started on port</variable>
+<variable name="webmode">cdpdriver</variable>
+<variable name="client">jproClient</variable>
+<variable name="url">http://localhost:8080</variable>
+<DependencyReference id="_2YLC" reference="dependencies.ConnectClient"/>
+<TestSet id="_6" name="Base Test Group">
+<DataDriver id="_2YZg">
+<TableDataBinder id="_2YZh" name="variants">
+<TableBinderColumn title="variant" width="152">
+<data>web</data>
+<data>web</data>
+<data>web</data>
+<data>web</data>
+</TableBinderColumn>
+<TableBinderColumn title="browser" width="164">
+<data>chrome</data>
+<data>safari</data>
+<data>firefox</data>
+<data>edge</data>
+</TableBinderColumn>
+<TableBinderColumn title="os" width="550">
+<data>windows,linux,macos</data>
+<data>macos</data>
+<data>windows,linux</data>
+<data>windows</data>
+</TableBinderColumn>
+</TableDataBinder>
+</DataDriver>
+<TestSet id="_2YZk" name="TheTests $(variant) $(browser) $(os)">
+<comment>'$(os)' == '${qftest:os.name}'</comment>
+<TestCase condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_6wqZ" interpreter="groovy" name="Click Button and test">
+<BasicSequence id="_6wqa" name="Setze Event-Optionen">
+<ProcedureCall id="_6wqb" procedure="qfs.jib.options.replayFXHardMouseEventAs">
+<variable name="clicktype">hard</variable>
+</ProcedureCall>
+<ProcedureCall id="_6wqc" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
+<variable name="clicktype">semihard</variable>
+</ProcedureCall>
+</BasicSequence>
+<MouseEventStep clicks="1" client="$(client)" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_6wqd" modifiers="16" x="26" y="19"/>
+<MouseEventStep clicks="1" client="$(client)" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_6wqe" modifiers="16"/>
+<CheckStringStep client="$(client)" component="#Label:name=label1" id="_6wqf">
+<text>Welcome to FXML and JPro!</text>
+</CheckStringStep>
+</TestCase>
+<TestCase condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_6wqS" interpreter="groovy" name="Click Button and test">
+<BasicSequence id="_6wqT" name="Setze Event-Optionen">
+<ProcedureCall id="_6wqU" procedure="qfs.jib.options.replayFXHardMouseEventAs">
+<variable name="clicktype">hard</variable>
+</ProcedureCall>
+<ProcedureCall id="_6wqV" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
+<variable name="clicktype">semihard</variable>
+</ProcedureCall>
+</BasicSequence>
+<MouseEventStep clicks="1" client="$(client)" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_6wqW" modifiers="16" x="26" y="19"/>
+<MouseEventStep clicks="1" client="$(client)" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_6wqX" modifiers="16"/>
+<CheckStringStep client="$(client)" component="#Label:name=label1" id="_6wqY">
+<text>Welcome to FXML and JPro!</text>
+</CheckStringStep>
+</TestCase>
+<TestCase condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_2YXt" interpreter="groovy" name="Click Button and test">
+<BasicSequence id="_2YXu" name="Setze Event-Optionen">
+<ProcedureCall id="_2YXv" procedure="qfs.jib.options.replayFXHardMouseEventAs">
+<variable name="clicktype">hard</variable>
+</ProcedureCall>
+<ProcedureCall id="_2YXw" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
+<variable name="clicktype">semihard</variable>
+</ProcedureCall>
+</BasicSequence>
+<MouseEventStep clicks="1" client="$(client)" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_2YXx" modifiers="16" x="26" y="19"/>
+<MouseEventStep clicks="1" client="$(client)" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_2YXy" modifiers="16"/>
+<CheckStringStep client="$(client)" component="#Label:name=label1" id="_2YXz">
+<text>Welcome to FXML and JPro!</text>
+</CheckStringStep>
+</TestCase>
+</TestSet>
+</TestSet>
+<PackageRoot id="_3">
+<Procedure id="_6wqO" name="openBrowser">
+<variable name="browser"/>
+<comment>Afterwards, the client variable refers to the usable client.
+Works both, with and without the JPro Loadbalancer.</comment>
+</Procedure>
+<Package id="_2YHr" name="dependencies">
+<Dependency id="_2YO5" name="JProServerStarted">
+<discriminator>jobname</discriminator>
+<variable name="JProServer">JPro</variable>
+<variable name="JProServerStartupMessage"/>
+<SetupSequence id="_2YO6" name="Start JProServer">
+<ClientWaiter client="JProServers" id="_2YZe" local="true" raise="false" resvarname="isConnected" timeout="0"/>
+<IfSequence id="_6wqN" interpreter="groovy" test="!$(isConnected)">
+<ShellClientStarter client="JProServers" command="java -jar jpro-loadbalancer-0.14.0-SNAPSHOT.jar" directory="../runtime" id="_2Ybp"/>
+<ProcedureCall disabled="true" id="_2YOK" procedure="qfs.utils.waitForClientOutput">
+<variable name="client">JProServer</variable>
+<variable name="expectedOutput">$(JProServerStartupMessage)</variable>
+<variable name="timeout">${default:timeout:60000}</variable>
+<variable name="polling">100</variable>
+</ProcedureCall>
+<ProcedureCall id="_6wqQ" procedure="jpro-utils.qft#waitForServer">
+<variable name="url">http://localhost:8080</variable>
+</ProcedureCall>
+<IfSequence id="_2YOJ" name="Wait for server startup" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<BasicSequence id="_2Ybr">
+<ProcedureCall id="_2YbQ" procedure="qfs.utils.waitForClientOutput">
+<variable name="client">JProServers</variable>
+<variable name="expectedOutput">$(JProServerStartupMessage)</variable>
+<variable name="timeout">${default:timeout:60000}</variable>
+<variable name="polling">1000</variable>
+</ProcedureCall>
+</BasicSequence>
+<ElseSequence id="_2YOL">
+<ClientWaiter client="JProServers" id="_2YbY"/>
+</ElseSequence>
+</IfSequence>
+</IfSequence>
+</SetupSequence>
+<CleanupSequence id="_2YRQ">
+<ClientStopper client="JProServers" id="_2YTg"/>
+<ProcessWaiter client="JProServers" id="_2YTh" timeout="15000"/>
+</CleanupSequence>
+</Dependency>
+<Dependency forcedcleanup="true" id="_6wqh" name="ConnectClient">
+<discriminator>browser</discriminator>
+<discriminator>webmode</discriminator>
+<CommentStep id="_6wqi">
+<heading>Zunächst muss der JPro Server gestartet werden</heading>
+</CommentStep>
+<DependencyReference id="_6wqj" reference="dependencies.JProServerStarted"/>
+<SetupSequence id="_6wqk" name="Browser bei Bedarf starten">
+<ProcedureCall id="_6wql" procedure="jpro-utils.qft#connectFXClient">
+<variable name="fxClient">JProServers</variable>
+<variable name="browser">$(browser)</variable>
+<variable name="url">$(url)</variable>
+<variable name="variant">$(variant)</variable>
+</ProcedureCall>
+</SetupSequence>
+<CleanupSequence id="_6wqm" name="JPro Client beenden">
+<ProcedureCall id="_6wqn" procedure="jpro-utils.qft#stopFXClient"/>
+</CleanupSequence>
+</Dependency>
+</Package>
+<Procedure id="_2Yba" name="runOnSystem">
+<variable name="os"/>
+<comment>Determine if the specified os is the same as the os of the machine running the test.
+
+@param os - the operating system to check for
+@returns true if the specified os meets the running os, false otherwhise</comment>
+<ServerScriptStep id="_2Ybj" interpreter="groovy">
+<code>def os = rc.getStr("os")
+def runOnSystem = false
+
+rc.logMessage("os.contains(macos): " + os.contains("macos"))
+
+if (os.contains("macos") &amp;&amp; rc.getBool("qftest","macOS")) {
+    runOnSystem = true
+}
+if (os.contains("windows") &amp;&amp; rc.getBool("qftest","windows")){
+    runOnSystem = true
+}
+if (os.contains("linux") &amp;&amp; rc.getBool("qftest","linux")){
+    runOnSystem = true
+}
+
+// Firefox &amp; Safari only supported with webdriver
+def browser = rc.getStr("browser")
+if (runOnSystem &amp;&amp; (browser == "firefox" || browser == "safari")) {
+    //runOnSystem = rc.getStr("webmode") == "webdriver"
+    rc.setGlobal("webmode", "webdriver")
+}
+
+rc.setLocal("runOnSystem",runOnSystem)</code>
+</ServerScriptStep>
+<ReturnStep id="_2Ybo" retval="$(runOnSystem)"/>
+</Procedure>
+</PackageRoot>
+<ExtraSequence id="_4"/>
+<WindowList id="_5"/>
+</RootStep>

@@ -15,7 +15,7 @@ buildscript {
     dependencies {
         classpath "one.jpro:jpro-gradle-plugin:$jproVersion"
         classpath "org.openjfx:javafx-plugin:$javafxPluginVersion"
-        classpath "de.qfs:qftest:2.0.2"
+        classpath "de.qfs:qftest:2.1.0"
     }
 }
 
@@ -80,6 +80,8 @@ jpro {
 
     openingPath = ""
 
+    javafxVersion = "21"
+
     openURLOnStartup = false
 }
 
@@ -104,6 +106,10 @@ qftest {
 
     reportDir = "$projectDir/qftest"
     runLogDir = "$projectDir/qftest"
+
+    def theCacheDir = new File(System.getProperty("user.home"), ".qftest/cache")
+    theCacheDir.mkdirs()
+    cacheDir = theCacheDir.getAbsolutePath()
 }
 
 test {
@@ -113,6 +119,12 @@ test {
         showStandardStreams = true
     }
     qftest {
-        suites = ["$projectDir/suites/jpro-gradle.qft"]
+        if (project.hasProperty("loadbalancer")) {
+            println("Running loadbalancer tests")
+            suites = ["$projectDir/suites/jpro-loadbalancer.qft"]
+        } else {
+            println("Running base tests")
+            suites = ["$projectDir/suites/jpro-gradle.qft"]
+        }
     }
 }

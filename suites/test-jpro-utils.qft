@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE RootStep>
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
+<include>qfs.qft</include>
+<reference>jpro-utils.qft</reference>
+<TestSet id="_1" name="Test JPro Utils">
+<TestCase id="_2" name="Test Wait for Server">
+<BasicSequence id="_J">
+<ProcedureCall id="_I" procedure="jpro-utils.qft#waitForServer" retvarname="tmp">
+<variable name="url">https://www.jpro.one</variable>
+</ProcedureCall>
+<TryStep id="_O">
+<BasicSequence id="_Q">
+<ProcedureCall id="_N" procedure="jpro-utils.qft#waitForServer" retvarname="tmp">
+<variable name="url">https://www.jpro.one.doesnt.exist</variable>
+</ProcedureCall>
+<ThrowStep id="_R" throwmessage="Wait didn't fail."/>
+</BasicSequence>
+<CatchSequence exception="TestException" id="_P" maxerror="0" regexp="true">
+<catchmessage>.*Page did not respond positively within.*</catchmessage>
+</CatchSequence>
+</TryStep>
+</BasicSequence>
+</TestCase>
+</TestSet>
+<CommentStep id="_7">
+<heading>Hi</heading>
+</CommentStep>
+<TestCase id="_6" name="SimpleTeset"/>
+<PackageRoot id="_3"/>
+<ExtraSequence id="_4"/>
+<WindowList id="_5"/>
+</RootStep>
