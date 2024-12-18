@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE RootStep>
-<RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.0">
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.2">
 <include>qfs.qft</include>
 <TestSet id="_1" name="unnamed">
 <TestCase id="_2" name="unnamed"/>
@@ -11,6 +11,7 @@
 <variable name="url"/>
 <variable name="browser">auto</variable>
 <variable name="webmode">auto</variable>
+<variable name="timeoutWaitForServer">60000</variable>
 <ServerScriptStep id="_2Ybj" interpreter="groovy" name="Set default values">
 <code>def browser = rc.getStr("browser")
 def webmode = rc.getStr("webmode")
@@ -34,6 +35,7 @@ if(webmode == "auto") {
 </LogMessageStep>
 <ProcedureCall id="_6wrT" procedure="waitForServer">
 <variable name="url">$(url)</variable>
+<variable name="timeoutWaitForServer">$(timeoutWaitForServer)</variable>
 </ProcedureCall>
 <BasicSequence id="_3NC" name="Web-Engine starten">
 <BrowserClientStarter browser="$(browser)" client="webClient" connectionmode="${default:webmode:webdriver}" executable="${qftest:java}" id="_3ND"
@@ -205,9 +207,10 @@ rc.setOption(Options.OPT_PLAY_LINUX_FORCED_RAISE_WITH_TOPMOST, false)</code>
 </Package>
 <Procedure id="_6wqP" name="waitForServer">
 <variable name="url"/>
+<variable name="timeoutWaitForServer">60000</variable>
 <comment>Waits for Server to be alive.</comment>
 <ServerScriptStep id="_6wqy" interpreter="groovy" name="Wait for Server $(url)">
-<code>int timeout = 60000  // 60 seconds in milliseconds
+<code>int timeout = rc.getNum("timeoutWaitForServer")  // Default: 60 seconds in milliseconds
 int interval = 5000  // Check every 5 seconds
 long requestTimeout = 2000 // 2 seconds timeout for the HTTP request
 long startTime = System.currentTimeMillis()
@@ -257,6 +260,7 @@ if (responsePositive) {
 <variable name="webmode">auto</variable>
 <variable name="url">fillout</variable>
 <variable name="variant">jpro</variable>
+<variable name="timeoutWaitForServer">60000</variable>
 <comment>variant can be either jpro or desktop</comment>
 <IfSequence id="_6wrL" test="&#34;$(variant)&#34;==&#34;web&#34;">
 <BasicSequence id="_6wrO" name="JPro">
@@ -264,6 +268,7 @@ if (responsePositive) {
 <variable name="url">$(url)</variable>
 <variable name="browser">$(browser)</variable>
 <variable name="webmode">$(webmode)</variable>
+<variable name="timeoutWaitForServer">$(timeoutWaitForServer)</variable>
 </ProcedureCall>
 <ProcedureCall id="_6wqR" procedure="internal.connectJProClient">
 <variable name="webClient">webClient</variable>
