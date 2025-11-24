@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE RootStep>
-<RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="9.0.6">
 <include>qfs.qft</include>
 <reference>jpro-utils.qft</reference>
 <variable name="JProServerStartupMessage">Tomcat started on port</variable>
@@ -94,7 +94,7 @@ Works both, with and without the JPro Loadbalancer.</comment>
 <SetupSequence id="_2YO6" name="Start JProServer">
 <ClientWaiter client="JProServers" id="_2YZe" local="true" raise="false" resvarname="isConnected" timeout="0"/>
 <IfSequence id="_6wqN" interpreter="groovy" test="!$(isConnected)">
-<ShellClientStarter client="JProServers" command="java -jar jpro-loadbalancer-0.14.0-SNAPSHOT.jar" directory="../runtime" id="_2Ybp"/>
+<ShellClientStarter client="JProServers" command="java -jar loadbalancer-2025.3.3-SNAPSHOT.jar" directory="../runtime" id="_2Ybp"/>
 <ProcedureCall disabled="true" id="_2YOK" procedure="qfs.utils.waitForClientOutput">
 <variable name="client">JProServer</variable>
 <variable name="expectedOutput">$(JProServerStartupMessage)</variable>

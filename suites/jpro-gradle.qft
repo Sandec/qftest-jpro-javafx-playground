@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE RootStep>
-<RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.1">
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="9.0.6">
 <include>qfs.qft</include>
 <reference>jpro-utils.qft</reference>
-<variable name="JProServerStartupMessage">Listening for HTTP on</variable>
+<variable name="JProServerStartupMessage">Server started at http://localhost:8080</variable>
 <variable name="engine">fx</variable>
 <variable name="url">http://localhost:8080</variable>
 <variable name="browser">chrome</variable>

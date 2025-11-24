@@ -64,7 +64,7 @@ javafx {
 /**
  * App Main Class
  */
-mainClassName = 'com.jpro.hellojpro.HelloRoutingApp'
+application.mainClass = 'com.jpro.hellojpro.HelloRoutingApp'
 
 /**
  * jpro settings
@@ -86,8 +86,13 @@ jpro {
 }
 
 dependencies {
-    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    //testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    //testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+
+
+    testImplementation platform("org.junit:junit-bom:$junitVersion")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+    testImplementation "org.junit.platform:junit-platform-launcher"
 }
 
 
@@ -95,7 +100,7 @@ qftest {
     //versionDir = "C:/Program Files/QFS/QF-Test/qftest-6.0.5"
     //version = "latest" // not used, if "versionDir" is specified
     //baseUrl = "https://www.qfs.de/fileadmin/Webdata/pub/temp/31112/" // not used, if "versionDir" is specified
-    
+
     version = "latest"
     arguments = ["-license", "$projectDir/qftest.license"]
     //license = "$projectDir/qflicense.license"
