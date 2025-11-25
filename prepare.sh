@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -x
+
+jpro_version=2025.3.3-QFTEST
+
 # build release
 ./gradlew jproRelease
 
@@ -11,4 +15,4 @@ cp build/distributions/qftest-jpro-javafx-playground-jpro.zip runtime/
 
 # download loadbalancer
 cd runtime
-curl -LO https://sandec.jfrog.io/artifactory/repo/one/jpro/jpro-loadbalancer/2025.3.1/jpro-loadbalancer-2025.3.1.jar
+curl -LO https://sandec.jfrog.io/artifactory/repo/one/jpro/jpro-loadbalancer/${jpro_version}/jpro-loadbalancer-${jpro_version}.jar

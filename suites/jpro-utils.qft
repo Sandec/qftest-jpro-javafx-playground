@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE RootStep>
-<RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.2">
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="9.0.6">
 <include>qfs.qft</include>
 <TestSet id="_1" name="unnamed">
 <TestCase id="_2" name="unnamed"/>
@@ -8,10 +8,16 @@
 <PackageRoot id="_3">
 <Package id="_6wrN" name="internal">
 <Procedure id="_6wqO" name="openBrowser">
-<variable name="url"/>
+<variable name="browserURL"/>
+<variable name="serverAddress"/>
 <variable name="browser">auto</variable>
 <variable name="webmode">auto</variable>
 <variable name="timeoutWaitForServer">60000</variable>
+<comment>@param browserURL 		The URL that is used while opening the Browser
+@param serverAddress		The URL / IP of the JPRO endoint ( for endpoint alive check )
+@param browser		The browser kind
+@param webmode		In what mode we comunicate with the browser ( webdirver | cdpdriver ) 
+@param timeoutWaitForServer	Time in ms on how long the testscript should try to reach the serverAddress endpoint</comment>
 <ServerScriptStep id="_2Ybj" interpreter="groovy" name="Set default values">
 <code>def browser = rc.getStr("browser")
 def webmode = rc.getStr("webmode")
@@ -34,7 +40,7 @@ if(webmode == "auto") {
 <text>browser: $(browser), webdriver: $(webmode)</text>
 </LogMessageStep>
 <ProcedureCall id="_6wrT" procedure="waitForServer">
-<variable name="url">$(url)</variable>
+<variable name="serverAddress">$(serverAddress)</variable>
 <variable name="timeoutWaitForServer">$(timeoutWaitForServer)</variable>
 </ProcedureCall>
 <BasicSequence id="_3NC" name="Web-Engine starten">
@@ -62,7 +68,7 @@ if(webmode == "auto") {
 </BasicSequence>
 <BasicSequence id="_1pHX" name="Browserfenster öffnen">
 <BrowserClientStarter browser="${default:browser:chrome}" client="webClient" executable="${qftest:java}" height="900" id="_1pHY" openwindow="true"
-                      url="$(url)"/>
+                      url="$(browserURL)"/>
 <DocumentWaiter client="webClient" component="genericDocument" id="_1pHZ" timeout="60000"/>
 </BasicSequence>
 <BasicSequence id="_1pHa" name="CustomWebResolver installieren">
@@ -206,16 +212,19 @@ rc.setOption(Options.OPT_PLAY_LINUX_FORCED_RAISE_WITH_TOPMOST, false)</code>
 </Procedure>
 </Package>
 <Procedure id="_6wqP" name="waitForServer">
-<variable name="url"/>
+<variable name="serverAddress"/>
 <variable name="timeoutWaitForServer">60000</variable>
-<comment>Waits for Server to be alive.</comment>
+<comment>Waits for Server to be alive.
+
+@param serverAddress		The url / ip of the JPRO endoint
+@param timeoutWaitForServer	Time in ms on how long the testscript should try to reach the serverAddress endpoint</comment>
 <ServerScriptStep id="_6wqy" interpreter="groovy" name="Wait for Server $(url)">
 <code>int timeout = rc.getNum("timeoutWaitForServer")  // Default: 60 seconds in milliseconds
 int interval = 5000  // Check every 5 seconds
 long requestTimeout = 2000 // 2 seconds timeout for the HTTP request
 long startTime = System.currentTimeMillis()
 boolean responsePositive = false
-String urlString = rc.lookup("url") + "/status/alive"
+String urlString = rc.lookup("serverAddress") + "/status/alive"
 
 rc.logMessage("Testing the url: " + urlString);
 
@@ -258,22 +267,64 @@ if (responsePositive) {
 <variable name="fxClient"/>
 <variable name="browser">auto</variable>
 <variable name="webmode">auto</variable>
-<variable name="url">fillout</variable>
+<variable name="serverAddress"/>
+<variable name="browserURL"/>
 <variable name="variant">jpro</variable>
 <variable name="timeoutWaitForServer">60000</variable>
-<comment>variant can be either jpro or desktop</comment>
+<comment>@param fxClient		
+@param browserURL 		The URL that is used while opening the Browser
+@param serverAddress		The URL / IP of the JPRO endoint ( for endpoint alive check )
+@param browser		The browser kind
+@param webmode		In what mode we comunicate with the browser ( webdirver | cdpdriver ) 
+@param timeoutWaitForServer	Time in ms on how long the testscript should try to reach the serverAddress endpoint
+@param variant		In what environement the FXClient is running ( desktop | web | web-remote-qftest)</comment>
 <IfSequence id="_6wrL" test="&#34;$(variant)&#34;==&#34;web&#34;">
 <BasicSequence id="_6wrO" name="JPro">
 <ProcedureCall id="_6wqc" procedure="internal.openBrowser" retvarname="webClient">
-<variable name="url">$(url)</variable>
 <variable name="browser">$(browser)</variable>
-<variable name="webmode">$(webmode)</variable>
+<variable name="browserURL">$(browserURL)</variable>
+<variable name="serverAddress">$(serverAddress)</variable>
 <variable name="timeoutWaitForServer">$(timeoutWaitForServer)</variable>
+<variable name="webmode">$(webmode)</variable>
 </ProcedureCall>
 <ProcedureCall id="_6wqR" procedure="internal.connectJProClient">
 <variable name="webClient">webClient</variable>
 </ProcedureCall>
 </BasicSequence>
+<ElseifSequence id="_6wuk" test="&#34;$(variant)&#34; == &#34;web-remote-qftest&#34;">
+<ServerScriptStep id="_2YTq">
+<code>from de.qfs.apps.qftest.shared import Globals
+from urllib import urlencode
+
+rc.logMessage("browser URL: " + rc.getStr("browserURL"))
+
+qfsut_serverhost = Globals.getGlobalString("serverhost", "localhost:3543")
+qfsut_clientname = "qfsut-jpro"
+
+params = {
+    "qfsut-serverhost": qfsut_serverhost,
+    "qfsut-clientname": qfsut_clientname
+}
+
+encoded_params = urlencode(params)
+
+rc.setLocal("browserURL", '%s?%s' % \
+            (rc.getStr("browserURL"), encoded_params))          
+rc.logMessage("browser URL: " + rc.getStr("browserURL"))        </code>
+</ServerScriptStep>
+<BasicSequence id="_6wul" name="JPro">
+<ProcedureCall id="_6wum" procedure="internal.openBrowser" retvarname="webClient">
+<variable name="browser">$(browser)</variable>
+<variable name="browserURL">$(browserURL)</variable>
+<variable name="serverAddress">$(serverAddress)</variable>
+<variable name="timeoutWaitForServer">$(timeoutWaitForServer)</variable>
+<variable name="webmode">$(webmode)</variable>
+</ProcedureCall>
+<ProcedureCall id="_6wun" procedure="internal.connectJProClient">
+<variable name="webClient">webClient</variable>
+</ProcedureCall>
+</BasicSequence>
+</ElseifSequence>
 <ElseifSequence id="_6wrQ" test="&#34;$(variant)&#34;==&#34;desktop&#34;">
 <BasicSequence id="_6wrP" name="Desktop">
 <SetGlobalStep id="_6wrU" varname="client">

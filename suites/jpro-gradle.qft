@@ -3,7 +3,7 @@
 <RootStep id="_0" indentation="0" linelength="160" name="root" version="9.0.6">
 <include>qfs.qft</include>
 <reference>jpro-utils.qft</reference>
-<variable name="JProServerStartupMessage">Server started at http://localhost:8080</variable>
+<variable name="JProServerStartupMessage">.*Server started at http://localhost:8080.*</variable>
 <variable name="engine">fx</variable>
 <variable name="url">http://localhost:8080</variable>
 <variable name="browser">chrome</variable>
@@ -137,6 +137,7 @@ rc.setLocal("runOnSystem",runOnSystem)</code>
 <ProcedureCall id="_2YbQ" procedure="qfs.utils.waitForClientOutput">
 <variable name="client">JProServer</variable>
 <variable name="expectedOutput">$(JProServerStartupMessage)</variable>
+<variable name="isRegex">true</variable>
 <variable name="timeout">${default:timeout:60000}</variable>
 <variable name="polling">1000</variable>
 </ProcedureCall>
