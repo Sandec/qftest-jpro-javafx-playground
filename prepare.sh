@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+set -euxo pipefail
 
 jpro_version=2025.3.3-QFTEST
 
@@ -14,5 +14,5 @@ mkdir -p runtime
 cp build/distributions/qftest-jpro-javafx-playground-jpro.zip runtime/
 
 # download loadbalancer
-cd runtime
+cd runtime || exit
 curl -LO https://sandec.jfrog.io/artifactory/repo/one/jpro/jpro-loadbalancer/${jpro_version}/jpro-loadbalancer-${jpro_version}.jar
