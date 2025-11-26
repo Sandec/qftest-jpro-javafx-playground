@@ -21,6 +21,13 @@
 <ServerScriptStep id="_2Ybj" interpreter="groovy" name="Set default values">
 <code>def browser = rc.getStr("browser")
 def webmode = rc.getStr("webmode")
+def browserURL = rc.getStr("browserURL")
+def serverAddress = rc.getStr("serverAddress")
+
+if(serverAddress == "") {
+    throw new RuntimeException("Parameter serverAddress was not defined")
+}
+
 
 if(browser == "auto") {
     browser = "chrome"
@@ -34,6 +41,15 @@ if(webmode == "auto") {
         rc.setLocal("webmode", "cdpdriver")          
     }
 }
+
+if(browserURL == "auto" ) {
+    rc.setLocal("browserURL", serverAddress)
+}
+if(browserURL == "") {
+    throw new RuntimeException("Parameter browserURL was not defined")
+}
+
+
 </code>
 </ServerScriptStep>
 <LogMessageStep clientInfo="false" clientScreenshots="-1" dontcompact="false" errorlevel="1" id="_6wr9" report="false" screenshots="-1">
@@ -264,13 +280,13 @@ if (responsePositive) {
 </ServerScriptStep>
 </Procedure>
 <Procedure id="_6wrF" name="connectFXClient">
-<variable name="fxClient"/>
 <variable name="browser">auto</variable>
-<variable name="webmode">auto</variable>
+<variable name="browserURL">auto</variable>
+<variable name="fxClient"/>
 <variable name="serverAddress"/>
-<variable name="browserURL"/>
-<variable name="variant">jpro</variable>
 <variable name="timeoutWaitForServer">60000</variable>
+<variable name="variant">jpro</variable>
+<variable name="webmode">auto</variable>
 <comment>@param fxClient		
 @param browserURL 		The URL that is used while opening the Browser
 @param serverAddress		The URL / IP of the JPRO endoint ( for endpoint alive check )

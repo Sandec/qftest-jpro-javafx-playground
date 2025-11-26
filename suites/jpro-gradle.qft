@@ -164,8 +164,8 @@ rc.setLocal("runOnSystem",runOnSystem)</code>
 <SetupSequence id="_2YPI" name="Browser bei Bedarf starten">
 <ProcedureCall id="_6wqf" procedure="jpro-utils.qft#connectFXClient">
 <variable name="fxClient">JProServer</variable>
+<variable name="serverAddress">$(url)</variable>
 <variable name="browser">$(browser)</variable>
-<variable name="url">$(url)</variable>
 <variable name="variant">$(variant)</variable>
 </ProcedureCall>
 </SetupSequence>

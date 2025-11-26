@@ -21,40 +21,35 @@
 <DependencyReference id="_2YLC" reference="dependencies.ConnectClient"/>
 <TestSet id="_6" name="Base Test Group">
 <DataDriver id="_2YZg">
-<TableDataBinder id="_6wqp" name="variants">
-<TableBinderColumn title="variant" width="236">
-<data>web</data>
-<data>web-remote-qftest</data>
-</TableBinderColumn>
-<TableBinderColumn title="browser" width="246">
-<data>firefox</data>
-<data>firefox</data>
-</TableBinderColumn>
-<TableBinderColumn title="os" width="595">
-<data>windows,linux</data>
-<data>windows,linux</data>
-</TableBinderColumn>
-</TableDataBinder>
-<TableDataBinder disabled="true" id="_2YZh" name="variants">
-<TableBinderColumn title="variant" width="259">
-<data>web</data>
-<data>web</data>
+<TableDataBinder id="_2YZh" name="variants">
+<TableBinderColumn title="variant" width="226">
 <data>web</data>
 <data>web-remote-qftest</data>
 <data>web</data>
+<data>web-remote-qftest</data>
+<data>web</data>
+<data>web-remote-qftest</data>
+<data>web</data>
+<data>web-remote-qftest</data>
 </TableBinderColumn>
-<TableBinderColumn title="browser" width="271">
+<TableBinderColumn title="browser" width="237">
 <data>chrome</data>
+<data>chrome</data>
+<data>safari</data>
 <data>safari</data>
 <data>firefox</data>
 <data>firefox</data>
 <data>edge</data>
+<data>edge</data>
 </TableBinderColumn>
-<TableBinderColumn title="os" width="656">
+<TableBinderColumn title="os" width="571">
 <data>windows,linux,macos</data>
+<data>windows,linux</data>
+<data>macos</data>
 <data>macos</data>
 <data>windows,linux</data>
 <data>windows,linux</data>
+<data>windows</data>
 <data>windows</data>
 </TableBinderColumn>
 </TableDataBinder>
