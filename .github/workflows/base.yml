@@ -27,6 +27,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           echo "Installing JPro requirements"
+          sudo apt-get update
           sudo apt-get install -y xorg libgtk-3-0
           sudo apt-get install -y wget software-properties-common
       
