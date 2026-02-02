@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE RootStep>
-<RootStep id="_0" indentation="0" linelength="160" name="root" version="9.0.6">
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="10.0.2">
 <include>qfs.qft</include>
-<reference>jpro-utils.qft</reference>
+<include>./jpro-utils.qft</include>
 <variable name="JProServerStartupMessage">.*Server started at http://localhost:8080.*</variable>
 <variable name="engine">fx</variable>
 <variable name="url">http://localhost:8080</variable>
@@ -10,7 +10,6 @@
 <variable name="client">JProServer</variable>
 <variable name="variant">web</variable>
 <variable name="webmode">cdpdriver</variable>
-<DependencyReference id="_2YLC" reference="dependencies.ConnectClient"/>
 <TestSet id="_1" name="Base Test Group">
 <DataDriver id="_2YZg" loopreportname="Test: $(variant) $(browser) $(os)">
 <TableDataBinder id="_2YZh" name="variants">
@@ -39,6 +38,7 @@
 </DataDriver>
 <TestSet condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_2YZk" interpreter="groovy" name="TheTests $(variant) $(browser) $(os)">
 <comment>'$(os)' == '${qftest:os.name}'</comment>
+<DependencyReference id="_2YLC" reference="dependencies.desktop-or-web"/>
 <TestCase id="_6wqT" interpreter="groovy" name="Click Button and test 1">
 <IfSequence id="_6wqU" test="test"/>
 <BasicSequence id="_6wqV" name="Setze Event-Optionen">
@@ -108,69 +108,85 @@ rc.setLocal("runOnSystem",runOnSystem)</code>
 <ReturnStep id="_2Ybo" retval="$(runOnSystem)"/>
 </Procedure>
 <Package id="_2YHr" name="dependencies">
-<Dependency id="_2YO5" name="JProServerStarted">
-<discriminator>jobname</discriminator>
+<Dependency id="_21Z" name="desktop-or-web">
+<DependencyReference id="_13N" reference="dependencies.desktop-running"/>
+<DependencyReference id="_MMw" reference="dependencies.browser-running">
+<variable name="fxclient">JProServer</variable>
+<variable name="browser">$(browser)</variable>
+<variable name="browserURL">$(browserURL)</variable>
+<variable name="serverAddress">http://localhost:8080</variable>
+</DependencyReference>
+</Dependency>
+<Dependency forcedcleanup="true" id="_XIZ" name="desktop-running">
 <discriminator>variant</discriminator>
-<variable name="JProServer">JPro</variable>
-<variable name="JProServerStartupMessage"/>
-<SetupSequence id="_2YO6" name="Start JProServer">
-<IfSequence id="_2YbU" test="&#34;$(variant)&#34;==&#34;web&#34;">
-<SetGlobalStep id="_2YbV" local="true" varname="jobname">
-<default>jproRun</default>
-</SetGlobalStep>
-<ElseSequence id="_2YbW">
-<SetGlobalStep id="_2YbX" local="true" varname="jobname">
-<default>run</default>
-</SetGlobalStep>
-</ElseSequence>
-</IfSequence>
-<ClientWaiter client="JProServer" id="_2YZe" local="true" raise="false" resvarname="isConnected" timeout="0"/>
-<IfSequence id="_2YZf" interpreter="groovy" test="!$(isConnected)">
-<IfSequence id="_1pP7" name="Windows" test="${qftest:windows}">
-<ShellClientStarter client="JProServer" command="gradlew.bat --no-daemon $(jobname)" directory=".." id="_2YXs"/>
-<ElseSequence id="_1pP9" name="macOS, Linux">
-<ShellClientStarter client="JProServer" command="./gradlew --no-daemon $(jobname)" directory=".." id="_2YWX"/>
-</ElseSequence>
-</IfSequence>
-</IfSequence>
-<IfSequence id="_2YOJ" name="Wait for server startup" test="&#34;$(variant)&#34;==&#34;web&#34;">
-<ProcedureCall id="_2YbQ" procedure="qfs.utils.waitForClientOutput">
-<variable name="client">JProServer</variable>
-<variable name="expectedOutput">$(JProServerStartupMessage)</variable>
-<variable name="isRegex">true</variable>
-<variable name="timeout">${default:timeout:60000}</variable>
-<variable name="polling">1000</variable>
-</ProcedureCall>
-<ElseSequence id="_2YOL">
-<ClientWaiter client="JProServer" id="_2YbY"/>
-</ElseSequence>
+<SetupSequence id="_kTj">
+<IfSequence id="_-Vz" test="&#34;$(variant)&#34;==&#34;desktop&#34;">
+<ShellClientStarter client="JProServer" command="./gradlew :run" directory=".." id="_6x6h"/>
+<ClientWaiter client="JProServer" id="_3NE"/>
 </IfSequence>
 </SetupSequence>
-<CleanupSequence id="_2YRQ">
-<TryStep id="_2YTf" name="Sicher stellen, dass der JPro Client ebenfalls beendet ist">
-<ClientStopper client="JProServer" id="_2YTg"/>
-<ProcessWaiter client="JProServer" id="_2YTh" timeout="15000"/>
-<CatchSequence exception="TestException" id="_2YTi" maxerror="0"/>
-</TryStep>
+<CleanupSequence id="_veU">
+<IfSequence id="_6n8" test="&#34;$(variant)&#34;==&#34;desktop&#34;">
+<ClientStopper client="JProServer" id="_6x6o"/>
+<ProcessWaiter client="JProServer" id="_uaq" timeout="15000"/>
+</IfSequence>
 </CleanupSequence>
 </Dependency>
-<Dependency forcedcleanup="true" id="_2YOR" name="ConnectClient">
+<Dependency id="_6wtL" name="browser-running">
+<discriminator>variant</discriminator>
+<discriminator>browserURL</discriminator>
 <discriminator>browser</discriminator>
-<discriminator>webmode</discriminator>
-<CommentStep id="_2YRF">
-<heading>Zunächst muss der JPro Server gestartet werden</heading>
-</CommentStep>
-<DependencyReference id="_2YTe" reference="dependencies.JProServerStarted"/>
-<SetupSequence id="_2YPI" name="Browser bei Bedarf starten">
-<ProcedureCall id="_6wqf" procedure="jpro-utils.qft#connectFXClient">
-<variable name="fxClient">JProServer</variable>
-<variable name="serverAddress">$(url)</variable>
+<variable name="fxclient">JProServer</variable>
+<variable name="browser">auto</variable>
+<variable name="browserURL">auto</variable>
+<variable name="serverAddress">http://localhost:8080</variable>
+<SetupSequence id="_6wtM" name="open">
+<IfSequence id="_oQB" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<ProcedureCall id="_6wtR" procedure="jpro.client.start">
+<variable name="clientName">$(browser)</variable>
+<variable name="fxClient">$(fxClient)</variable>
 <variable name="browser">$(browser)</variable>
-<variable name="variant">$(variant)</variable>
+<variable name="browserURL">$(browserURL)</variable>
+<variable name="qftestVariant">default</variable>
+<variable name="serverAddress">$(serverAddress)</variable>
+<variable name="timeoutWaitForServer">60000</variable>
+<variable name="webmode">auto</variable>
 </ProcedureCall>
+</IfSequence>
 </SetupSequence>
-<CleanupSequence id="_2YOT" name="JPro Client beenden">
-<ProcedureCall id="_6wqg" procedure="jpro-utils.qft#stopFXClient"/>
+<CleanupSequence id="_6wtN" name="close">
+<IfSequence id="_pW" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<ClientStopper client="$(browser)" id="_BOi"/>
+<ProcessWaiter client="$(browser)" id="_ULX" timeout="15000"/>
+<ProcedureCall disabled="true" id="_6ZN" procedure="jpro.client.stop">
+<variable name="fxClient">$(fxClient)</variable>
+<variable name="clientName">$(browser)</variable>
+<variable name="browser">$(browser)</variable>
+<variable name="browserURL">$(browserURL)</variable>
+<variable name="serverAddress">$(serverAddress)</variable>
+<variable name="timeoutWaitForServer">60000</variable>
+<variable name="webmode">auto</variable>
+<variable name="qftestVariant">default</variable>
+</ProcedureCall>
+</IfSequence>
+</CleanupSequence>
+</Dependency>
+<Dependency id="_6" name="backend-running" reportname="Orchestrating gradle test:jproRun and browser">
+<discriminator>variant</discriminator>
+<comment>Make sure the jpro test repo with all integration test is running (e.g ./gradlew test;jproRun) , and then do all the jpro-utils stuff</comment>
+<DependencyReference id="_7" reference="jpro.server.running">
+<variable name="dir">../</variable>
+<variable name="timeout">500000</variable>
+<variable name="command">./gradlew --no-daemon :jproRun</variable>
+<variable name="serverAddress">http://localhost:8080</variable>
+<variable name="browser">auto</variable>
+</DependencyReference>
+<SetupSequence id="_6wv5" name="start"/>
+<CleanupSequence id="_VED">
+<IfSequence id="_CNi" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<ClientStopper client="JProServer" id="_nZf"/>
+<ProcessWaiter client="JProServer" id="_jhe" timeout="15000"/>
+</IfSequence>
 </CleanupSequence>
 </Dependency>
 </Package>
