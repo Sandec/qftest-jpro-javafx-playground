@@ -2,7 +2,7 @@
 
 set -euxo pipefail
 
-jpro_version=2025.3.3-QFTEST
+jpro_version=2026.1.0
 
 # build release
 ./gradlew jproRelease

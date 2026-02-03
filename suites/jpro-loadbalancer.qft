@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE RootStep>
-<RootStep id="_0" indentation="0" linelength="160" name="root" version="9.0.6">
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="10.0.2">
 <include>qfs.qft</include>
+<include>./jpro-utils.qft</include>
 <reference>jpro-utils.qft</reference>
 <variable name="JProServerStartupMessage">Tomcat initialized with port</variable>
 <variable name="loadbalancerApplicationStartPort">8500</variable>
-<variable name="JProVersion">2025.3.3-QFTEST</variable>
+<variable name="JProVersion">2026.1.0</variable>
 <variable name="webmode">cdpdriver</variable>
-<variable name="serverAddress">http://localhost:8081</variable>
-<variable name="browserURL">http://localhost:8081</variable>
+<variable name="port">8084</variable>
+<variable name="serverAddress">http://localhost:$(port)</variable>
+<variable name="browserURL">http://localhost:$(port)</variable>
 <variable name="client">jproClient</variable>
 <variable name="qfclient_remote">true</variable>
 <comment>@param JProServerStartupMessage		A text string that is looked for in the server output logs
@@ -18,10 +20,30 @@
 @param serverAddress			The URL / IP of the JPRO endoint
 @param 				The base URL the browser will be opend with
 @param client			</comment>
-<DependencyReference id="_2YLC" reference="dependencies.ConnectClient"/>
 <TestSet id="_6" name="Base Test Group">
+<DependencyReference id="_6wsk" reference="dependencies.backend-running"/>
 <DataDriver id="_2YZg">
 <TableDataBinder id="_2YZh" name="variants">
+<TableBinderColumn title="variant" width="193">
+<data>web</data>
+<data>web</data>
+<data>web</data>
+<data>web</data>
+</TableBinderColumn>
+<TableBinderColumn title="browser" width="202">
+<data>chrome</data>
+<data>safari</data>
+<data>firefox</data>
+<data>edge</data>
+</TableBinderColumn>
+<TableBinderColumn title="os" width="484">
+<data>windows,linux,macos</data>
+<data>macos</data>
+<data>windows,linux</data>
+<data>windows</data>
+</TableBinderColumn>
+</TableDataBinder>
+<TableDataBinder disabled="true" id="_ORA" name="variants">
 <TableBinderColumn title="variant" width="226">
 <data>web</data>
 <data>web-remote-qftest</data>
@@ -56,37 +78,25 @@
 </DataDriver>
 <TestSet id="_2YZk" name="TheTests $(variant) $(browser) $(os)">
 <comment>'$(os)' == '${qftest:os.name}'</comment>
-<TestCase condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_6wqZ" interpreter="groovy" name="Click Button and test">
-<BasicSequence id="_6wqa" name="Setze Event-Optionen">
-<ProcedureCall id="_6wqb" procedure="qfs.jib.options.replayFXHardMouseEventAs">
+<DependencyReference id="_zg+" reference="dependencies.desktop-or-web"/>
+<TestCase id="_6wqT" interpreter="groovy" name="Click Button and test 1">
+<IfSequence id="_6wqU" test="test"/>
+<BasicSequence id="_6wqV" name="Setze Event-Optionen">
+<ProcedureCall id="_6wqW" procedure="qfs.jib.options.replayFXHardMouseEventAs">
 <variable name="clicktype">hard</variable>
 </ProcedureCall>
-<ProcedureCall id="_6wqc" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
+<ProcedureCall id="_6wqX" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
 <variable name="clicktype">semihard</variable>
 </ProcedureCall>
 </BasicSequence>
-<MouseEventStep clicks="1" client="$(client)" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_6wqd" modifiers="16" x="26" y="19"/>
-<MouseEventStep clicks="1" client="$(client)" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_6wqe" modifiers="16"/>
-<CheckStringStep client="$(client)" component="#Label:name=label1" id="_6wqf">
+<MouseEventStep clicks="1" client="$(client)" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_6wqY" modifiers="16" x="26" y="19"/>
+<MouseEventStep clicks="1" client="$(client)" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_6wqZ" modifiers="16"/>
+<CheckStringStep client="$(client)" component="#Label:name=label1" id="_6wqa">
 <text>Welcome to FXML and JPro!</text>
 </CheckStringStep>
 </TestCase>
-<TestCase condition="rc.callProcedure(&#34;runOnSystem&#34;)" disabled="true" id="_6wqS" interpreter="groovy" name="Click Button and test">
-<BasicSequence id="_6wqT" name="Setze Event-Optionen">
-<ProcedureCall id="_6wqU" procedure="qfs.jib.options.replayFXHardMouseEventAs">
-<variable name="clicktype">hard</variable>
-</ProcedureCall>
-<ProcedureCall id="_6wqV" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
-<variable name="clicktype">semihard</variable>
-</ProcedureCall>
-</BasicSequence>
-<MouseEventStep clicks="1" client="$(client)" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_6wqW" modifiers="16" x="26" y="19"/>
-<MouseEventStep clicks="1" client="$(client)" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_6wqX" modifiers="16"/>
-<CheckStringStep client="$(client)" component="#Label:name=label1" id="_6wqY">
-<text>Welcome to FXML and JPro!</text>
-</CheckStringStep>
-</TestCase>
-<TestCase condition="rc.callProcedure(&#34;runOnSystem&#34;)" disabled="true" id="_2YXt" interpreter="groovy" name="Click Button and test">
+<TestCase id="_2YXt" interpreter="groovy" name="Click Button and test 2">
+<IfSequence id="_6wqS" test="test"/>
 <BasicSequence id="_2YXu" name="Setze Event-Optionen">
 <ProcedureCall id="_2YXv" procedure="qfs.jib.options.replayFXHardMouseEventAs">
 <variable name="clicktype">hard</variable>
@@ -105,7 +115,88 @@
 </TestSet>
 <PackageRoot id="_3">
 <Package id="_2YHr" name="dependencies">
-<Dependency id="_2YO5" name="JProServerStarted">
+<Dependency id="_21Z" name="desktop-or-web">
+<DependencyReference id="_13N" reference="dependencies.desktop-running"/>
+<DependencyReference id="_MMw" reference="dependencies.browser-running">
+<variable name="fxclient">JProServer</variable>
+<variable name="browser">$(browser)</variable>
+<variable name="browserURL">$(browserURL)</variable>
+<variable name="serverAddress">http://localhost:$(port)</variable>
+</DependencyReference>
+</Dependency>
+<Dependency forcedcleanup="true" id="_XIZ" name="desktop-running">
+<discriminator>variant</discriminator>
+<SetupSequence id="_kTj">
+<IfSequence id="_-Vz" test="&#34;$(variant)&#34;==&#34;desktop&#34;">
+<ShellClientStarter client="JProServer" command="./gradlew :run" directory=".." id="_6x6h"/>
+<ClientWaiter client="JProServer" id="_3NE"/>
+</IfSequence>
+</SetupSequence>
+<CleanupSequence id="_veU">
+<IfSequence id="_6n8" test="&#34;$(variant)&#34;==&#34;desktop&#34;">
+<ClientStopper client="JProServer" id="_6x6o"/>
+<ProcessWaiter client="JProServer" id="_uaq" timeout="15000"/>
+</IfSequence>
+</CleanupSequence>
+</Dependency>
+<Dependency id="_6wtL" name="browser-running">
+<discriminator>variant</discriminator>
+<discriminator>browserURL</discriminator>
+<discriminator>browser</discriminator>
+<variable name="fxclient">JProServer</variable>
+<variable name="browser">auto</variable>
+<variable name="browserURL">auto</variable>
+<variable name="serverAddress">http://localhost:9000</variable>
+<SetupSequence id="_6wtM" name="open">
+<IfSequence id="_oQB" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<ProcedureCall id="_6wtR" procedure="jpro.client.start">
+<variable name="clientName">$(browser)</variable>
+<variable name="fxClient">$(fxClient)</variable>
+<variable name="browser">$(browser)</variable>
+<variable name="browserURL">$(browserURL)</variable>
+<variable name="qftestVariant">default</variable>
+<variable name="serverAddress">$(serverAddress)</variable>
+<variable name="timeoutWaitForServer">60000</variable>
+<variable name="webmode">auto</variable>
+</ProcedureCall>
+</IfSequence>
+</SetupSequence>
+<CleanupSequence id="_6wtN" name="close">
+<IfSequence id="_pW" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<ClientStopper client="$(browser)" id="_BOi"/>
+<ProcessWaiter client="$(browser)" id="_ULX" timeout="15000"/>
+<ProcedureCall disabled="true" id="_6ZN" procedure="jpro.client.stop">
+<variable name="fxClient">$(fxClient)</variable>
+<variable name="clientName">$(browser)</variable>
+<variable name="browser">$(browser)</variable>
+<variable name="browserURL">$(browserURL)</variable>
+<variable name="serverAddress">$(serverAddress)</variable>
+<variable name="timeoutWaitForServer">60000</variable>
+<variable name="webmode">auto</variable>
+<variable name="qftestVariant">default</variable>
+</ProcedureCall>
+</IfSequence>
+</CleanupSequence>
+</Dependency>
+<Dependency id="_Bey" name="backend-running" reportname="Orchestrating gradle test:jproRun and browser">
+<discriminator>variant</discriminator>
+<comment>Make sure the jpro test repo with all integration test is running (e.g ./gradlew test;jproRun) , and then do all the jpro-utils stuff</comment>
+<DependencyReference id="_7" reference="jpro.server.running">
+<variable name="dir">../runtime</variable>
+<variable name="timeout">500000</variable>
+<variable name="command">java -jar jpro-loadbalancer-$(JProVersion).jar --server.port=$(port) --one.jpro.loadbalancer.startPort=$(loadbalancerApplicationStartPort) "--one.jpro.loadbalancer.qfsut=${qftest:dir.version}/bin/qfsut.sh"</variable>
+<variable name="serverAddress">http://localhost:9000</variable>
+<variable name="browser">auto</variable>
+</DependencyReference>
+<SetupSequence id="_6wv5" name="start"/>
+<CleanupSequence id="_VED">
+<IfSequence id="_CNi" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<ClientStopper client="JProServer" id="_nZf"/>
+<ProcessWaiter client="JProServer" id="_jhe" timeout="15000"/>
+</IfSequence>
+</CleanupSequence>
+</Dependency>
+<Dependency id="_2YO5" name="JProServerStarted-old">
 <discriminator>jobname</discriminator>
 <variable name="JProServer">JPro</variable>
 <variable name="JProServerStartupMessage"/>
