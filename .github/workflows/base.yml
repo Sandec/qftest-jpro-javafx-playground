@@ -15,7 +15,7 @@ jobs:
   builds:
     name: '${{ inputs.os }}'
     runs-on: ${{ inputs.os }}
-    timeout-minutes: 40
+    timeout-minutes: 20
     env:
       USE_JAVAFX: ${{ inputs.javafx }}
 
