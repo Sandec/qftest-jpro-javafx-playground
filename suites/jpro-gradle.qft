@@ -11,6 +11,7 @@
 <variable name="variant">web</variable>
 <variable name="webmode">cdpdriver</variable>
 <TestSet id="_1" name="Base Test Group">
+<DependencyReference id="_6wsk" reference="dependencies.backend-running"/>
 <DataDriver id="_2YZg" loopreportname="Test: $(variant) $(browser) $(os)">
 <TableDataBinder id="_2YZh" name="variants">
 <TableBinderColumn title="variant" width="159">
