@@ -76,7 +76,7 @@
 </TableBinderColumn>
 </TableDataBinder>
 </DataDriver>
-<TestSet id="_2YZk" name="TheTests $(variant) $(browser) $(os)">
+<TestSet condition="rc.callProcedure(&#34;runOnSystem&#34;)" id="_2YZk" interpreter="groovy" name="TheTests $(variant) $(browser) $(os)">
 <comment>'$(os)' == '${qftest:os.name}'</comment>
 <DependencyReference id="_zg+" reference="dependencies.desktop-or-web"/>
 <TestCase id="_6wqT" interpreter="groovy" name="Click Button and test 1">
