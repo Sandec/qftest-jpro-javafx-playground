@@ -23,7 +23,7 @@
 <TestSet id="_6" name="Base Test Group">
 <DependencyReference id="_6wsk" reference="dependencies.backend-running"/>
 <DataDriver id="_2YZg">
-<TableDataBinder id="_2YZh" name="variants">
+<TableDataBinder disabled="true" id="_2YZh" name="variants">
 <TableBinderColumn title="variant" width="193">
 <data>web</data>
 <data>web</data>
@@ -43,7 +43,7 @@
 <data>windows</data>
 </TableBinderColumn>
 </TableDataBinder>
-<TableDataBinder disabled="true" id="_ORA" name="variants">
+<TableDataBinder id="_ORA" name="variants">
 <TableBinderColumn title="variant" width="226">
 <data>web</data>
 <data>web-remote-qftest</data>
@@ -148,7 +148,7 @@
 <variable name="browserURL">auto</variable>
 <variable name="serverAddress">http://localhost:9000</variable>
 <SetupSequence id="_6wtM" name="open">
-<IfSequence id="_oQB" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<IfSequence id="_oQB" test="&#34;$(variant)&#34;!=&#34;desktop&#34;">
 <ProcedureCall id="_6wtR" procedure="jpro.client.start">
 <variable name="clientName">$(browser)</variable>
 <variable name="fxClient">$(fxClient)</variable>
@@ -157,12 +157,12 @@
 <variable name="qftestVariant">default</variable>
 <variable name="serverAddress">$(serverAddress)</variable>
 <variable name="timeoutWaitForServer">60000</variable>
-<variable name="webmode">auto</variable>
+<variable name="qftestVariant">$(variant)</variable>
 </ProcedureCall>
 </IfSequence>
 </SetupSequence>
 <CleanupSequence id="_6wtN" name="close">
-<IfSequence id="_pW" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<IfSequence id="_pW" test="&#34;$(variant)&#34;!=&#34;desktop&#34;">
 <ClientStopper client="$(browser)" id="_BOi"/>
 <ProcessWaiter client="$(browser)" id="_ULX" timeout="15000"/>
 <ProcedureCall disabled="true" id="_6ZN" procedure="jpro.client.stop">
@@ -190,7 +190,7 @@
 </DependencyReference>
 <SetupSequence id="_6wv5" name="start"/>
 <CleanupSequence id="_VED">
-<IfSequence id="_CNi" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<IfSequence id="_CNi" test="&#34;$(variant)&#34;!=&#34;desktop&#34;">
 <ClientStopper client="JProServer" id="_nZf"/>
 <ProcessWaiter client="JProServer" id="_jhe" timeout="15000"/>
 </IfSequence>

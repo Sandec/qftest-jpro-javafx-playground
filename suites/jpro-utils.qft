@@ -92,7 +92,7 @@ your application's windows and components just as with any JavaFX or web UI.
 <variable name="command">$(command)</variable>
 </DependencyReference>
 <SetupSequence id="_6x7a" name="starting">
-<IfSequence id="_6An" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<IfSequence id="_6An" test="&#34;$(variant)&#34;!=&#34;desktop&#34;">
 <ProcedureCall id="_6x7c" procedure="jpro.client.start">
 <variable name="fxClient">JProServer</variable>
 <variable name="serverAddress">$(serverAddress)</variable>
@@ -102,7 +102,7 @@ your application's windows and components just as with any JavaFX or web UI.
 </IfSequence>
 </SetupSequence>
 <CleanupSequence id="_6x7d" name="stoping">
-<IfSequence id="_Su5" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<IfSequence id="_Su5" test="&#34;$(variant)&#34;!=&#34;desktop&#34;">
 <ProcedureCall id="_6x7e" procedure="jpro.client.stop"/>
 </IfSequence>
 </CleanupSequence>
@@ -206,7 +206,7 @@ In this context "jpro.server" referes to your jpro application running ontop of 
 <variable name="command">./gradlew --no-daemon jproRun</variable>
 <SetupSequence id="_6x6i" name="starting">
 <variable name="expectedOutput">Server started at</variable>
-<IfSequence id="_b5h" test="&#34;$(variant)&#34;==&#34;web&#34;">
+<IfSequence id="_b5h" test="&#34;$(variant)&#34;!=&#34;desktop&#34;">
 <ProcedureCall id="_6x6k" procedure="jpro.server.start" retvarname="qftestClientName">
 <variable name="dir">$(dir)</variable>
 <variable name="command">$(command)</variable>
