@@ -20,3 +20,6 @@ Desktop:
 ```
 ./gradlew run
 ```
+
+TODO:
+in case of loadbalancer make sure thast qfsut.sh is executable ( chmod +x qfsut.sh )

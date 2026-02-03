@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set -euxo pipefail
+
+jpro_version=2026.1.0
+
 # build release
 ./gradlew jproRelease
 
@@ -10,6 +14,5 @@ mkdir -p runtime
 cp build/distributions/qftest-jpro-javafx-playground-jpro.zip runtime/
 
 # download loadbalancer
-cd runtime
-URL="curl -LO https://sandec.jfrog.io/artifactory/repo/one/jpro/jpro-loadbalancer/0.14.0-SNAPSHOT/jpro-loadbalancer-0.14.0-SNAPSHOT.jar"
-curl -LO https://sandec.jfrog.io/artifactory/repo/one/jpro/jpro-loadbalancer/0.14.0-SNAPSHOT/jpro-loadbalancer-0.14.0-SNAPSHOT.jar
+cd runtime || exit
+curl -LO https://sandec.jfrog.io/artifactory/repo/one/jpro/jpro-loadbalancer/${jpro_version}/jpro-loadbalancer-${jpro_version}.jar

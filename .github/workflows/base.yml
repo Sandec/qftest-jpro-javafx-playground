@@ -15,7 +15,7 @@ jobs:
   builds:
     name: '${{ inputs.os }}'
     runs-on: ${{ inputs.os }}
-    timeout-minutes: 40
+    timeout-minutes: 20
     env:
       USE_JAVAFX: ${{ inputs.javafx }}
 
@@ -27,6 +27,7 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           echo "Installing JPro requirements"
+          sudo apt-get update
           sudo apt-get install -y xorg libgtk-3-0
           sudo apt-get install -y wget software-properties-common
       
@@ -57,6 +58,7 @@ jobs:
           path: |
             ~/.gradle/wrapper
             ~/.qftest/cache
+            ~/.gradle/caches
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
@@ -70,7 +72,7 @@ jobs:
             echo "Detected Linux OS"
             export DISPLAY=:99.0 && /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16;
           fi
-          ./gradlew test
+          ./gradlew test --debug
       - name: QF-Test Report
         if: always()
         uses: actions/upload-artifact@v4

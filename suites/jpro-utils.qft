@@ -1,20 +1,328 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE RootStep>
-<RootStep id="_0" indentation="0" linelength="160" name="root" version="8.0.2">
+<RootStep id="_0" indentation="0" linelength="160" name="root" version="10.0.2">
 <include>qfs.qft</include>
-<TestSet id="_1" name="unnamed">
-<TestCase id="_2" name="unnamed"/>
-</TestSet>
+<comment>&lt;h1&gt;jpro-utils.qft &#8211; JPro Integration Library&lt;/h1&gt;
+
+&lt;p&gt;
+The &lt;b&gt;jpro-utils.qft&lt;/b&gt; library enables QF-Test to run automated tests directly
+against JPro applications, similar to testing standard desktop JavaFX applications.
+It automates the startup of your JPro server, launches a browser client, and exposes
+the JPro UI for interaction with QF-Test.
+&lt;/p&gt;
+
+&lt;h2&gt;API Documentation&lt;/h2&gt;
+&lt;p&gt;
+Full API documentation is available below:&lt;br&gt;
+
+You may also inspect the package and procedure annotations directly inside the
+&lt;b&gt;jpro-utils.qft&lt;/b&gt; file.
+&lt;/p&gt;
+
+&lt;h2&gt;High-Level Overview&lt;/h2&gt;
+
+&lt;h3&gt;1. jpro.server &#8211; Starting the JPro Server&lt;/h3&gt;
+&lt;p&gt;
+QF-Test launches your JPro server (running your JavaFX application) and waits
+until the backend is ready.&lt;br&gt;
+This is known as the &lt;b&gt;JProServer client&lt;/b&gt; in QF-Test.&lt;br&gt;
+All related procedures are contained in the &lt;b&gt;jpro.server&lt;/b&gt; package.
+&lt;/p&gt;
+
+&lt;h3&gt;2. jpro.client &#8211; Launching the Browser&lt;/h3&gt;
+&lt;p&gt;
+QF-Test opens a browser and loads your JPro application URL.&lt;br&gt;
+This is the &lt;b&gt;jproClient client&lt;/b&gt; in QF-Test.&lt;br&gt;
+All related procedures are contained in the &lt;b&gt;jpro.client&lt;/b&gt; package.
+&lt;/p&gt;
+
+&lt;h2&gt;Quickstart Guide&lt;/h2&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Create a test suite and include the file &lt;b&gt;jpro-utils.qft&lt;/b&gt;
+      just like you include &lt;b&gt;qfs.qft&lt;/b&gt;.&lt;/li&gt;
+
+  &lt;li&gt;(Optional) Add a condition in your TestcaseSet so that the
+      JPro machinery only runs for JPro-related tests.&lt;/li&gt;
+
+  &lt;li&gt;Add the dependency &lt;b&gt;jpro.running&lt;/b&gt; to your Testcase or TestcaseSet
+      and set the required variables:&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;b&gt;dir&lt;/b&gt;: Directory from which your JPro server command should run
+      (absolute or relative to your .qft file)&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;command&lt;/b&gt;: Command to start your JPro application&lt;br&gt;
+      e.g. &lt;code&gt;./gradlew jproRun&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;serverAddress&lt;/b&gt;: Host/URL where the JPro server will be reachable&lt;br&gt;
+      e.g. &lt;code&gt;localhost:8080&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;b&gt;browser&lt;/b&gt;: Browser type to open your JPro UI in&lt;br&gt;
+      e.g. &lt;code&gt;chrome&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3&gt;Writing Tests&lt;/h3&gt;
+&lt;p&gt;
+After the dependency starts your JPro application and opens the browser,
+you can record or manually write tests as usual. QF-Test interacts with
+your application's windows and components just as with any JavaFX or web UI.
+&lt;/p&gt;
+
+
+</comment>
 <PackageRoot id="_3">
+<Package id="_6x5a" name="jpro">
+<comment>This package contains helpful procedures interacting with the Jpro ecosystem provided by the JPro Team.
+
+@author JPro
+@since 9.0.6</comment>
+<Dependency id="_6x6p" name="running">
+<variable name="dir">..</variable>
+<variable name="command">./gradlew --no-daemon jproRun</variable>
+<variable name="serverAddress">http://localhost:8080</variable>
+<variable name="browser">auto</variable>
+<variable name="variant">web</variable>
+<comment>A single dependency to hoist the complete jpro runtime into qftest.
+
+@param dir		The absolute or relative ( to your .qft file ) directory where your jproRun command should be executed from.
+@param command	The shell command that shell be executed to run your jpro application. ( example: "./gradlew jproRun").
+@param serverAddress	The IP / URL of your jpro server ( example: http://localhost:8080 }.
+@param browser	The browser you want to run your jpro application view in.</comment>
+<DependencyReference id="_6x7G" reference="jpro.server.running">
+<variable name="dir">$(dir)</variable>
+<variable name="command">$(command)</variable>
+</DependencyReference>
+<SetupSequence id="_6x7a" name="starting">
+<IfSequence id="_6An" test="&#34;$(variant)&#34;!=&#34;desktop&#34;">
+<ProcedureCall id="_6x7c" procedure="jpro.client.start">
+<variable name="fxClient">JProServer</variable>
+<variable name="serverAddress">$(serverAddress)</variable>
+<variable name="browser">$(browser)</variable>
+<variable name="variant">$(variant)</variable>
+</ProcedureCall>
+</IfSequence>
+</SetupSequence>
+<CleanupSequence id="_6x7d" name="stoping">
+<IfSequence id="_Su5" test="&#34;$(variant)&#34;!=&#34;desktop&#34;">
+<ProcedureCall id="_6x7e" procedure="jpro.client.stop"/>
+</IfSequence>
+</CleanupSequence>
+</Dependency>
+<Package id="_6x6R" name="client">
+<comment>Provides procedures to run the browser and connect it to your jpro application. This package helps getting the "frontend" of your jpro application going. 
+
+In this context "jpro.client" referes to the "webbrowser" or "view" in wich your jpro application is displayed to the user. 
+
+@author JPro
+@since 9.0.6</comment>
+<Procedure id="_6x6S" name="start">
+<variable name="clientName">browser</variable>
+<variable name="fxClient"/>
+<variable name="browser">auto</variable>
+<variable name="browserURL">auto</variable>
+<variable name="qftestVariant">default</variable>
+<variable name="serverAddress"/>
+<variable name="timeoutWaitForServer">60000</variable>
+<variable name="webmode">auto</variable>
+<comment>Starts the browser, opening your jpro application.
+
+@param clientName		The QFTest clientname for this client instance.
+@param fxClient		
+@param browserURL 		The URL that is used while opening the Browser
+@param serverAddress		The URL / IP of the JPRO server ( for server alive check )
+@param browser		The browser kind ( chrome, firefox, edge, safari )
+@param webmode		In what mode we comunicate with the browser ( webdirver | cdpdriver ) 
+@param timeoutWaitForServer	Time in ms on how long the testscript should try to reach the serverAddress endpoint
+@param qftestVariant		In what environement the FXClient is running ( default | remote-qftest)</comment>
+<IfSequence id="_6x6-" test="&#34;$(qftestVariant)&#34;==&#34;remote-qftest&#34;">
+<ServerScriptStep id="_6x74">
+<code>from de.qfs.apps.qftest.shared import Globals
+from urllib import urlencode
+
+rc.logMessage("browser URL: " + rc.getStr("browserURL"))
+
+qfsut_serverhost = Globals.getGlobalString("serverhost", "localhost:3543")
+qfsut_clientname = "qfsut-jpro"
+
+params = {
+    "qfsut-serverhost": qfsut_serverhost,
+    "qfsut-clientname": qfsut_clientname
+}
+
+encoded_params = urlencode(params)
+
+rc.setLocal("browserURL", '%s?%s' % \
+            (rc.getStr("browserURL"), encoded_params))          
+rc.logMessage("browser URL: " + rc.getStr("browserURL"))        </code>
+</ServerScriptStep>
+</IfSequence>
+<ProcedureCall id="_6x6v" procedure="jpro.internal.openBrowser" retvarname="webClient">
+<variable name="clientName">$(clientName)</variable>
+<variable name="browser">$(browser)</variable>
+<variable name="browserURL">$(browserURL)</variable>
+<variable name="serverAddress">$(serverAddress)</variable>
+<variable name="timeoutWaitForServer">$(timeoutWaitForServer)</variable>
+<variable name="webmode">$(webmode)</variable>
+</ProcedureCall>
+<ProcedureCall id="_6x6w" procedure="jpro.internal.connectJProClient">
+<variable name="webClient">$(clientName)</variable>
+</ProcedureCall>
+</Procedure>
+<Procedure id="_6x7L" name="stop">
+<comment>Closing the browser.</comment>
+<TryStep id="_6x7M" name="Verbindung zwischen Web und FX Clients lösen">
+<ClientWaiter client="$(client)" engine="fx" id="_6x7N" timeout="0"/>
+<ClientScriptStep client="$(client)" engine="fx" id="_6x7O">
+<code>from de.qfs.apps.qftest.client import Client
+Client.instance().setForeignPlayback(None)</code>
+</ClientScriptStep>
+<CatchSequence exception="ClientNotConnectedException" id="_6x7P" maxerror="0"/>
+</TryStep>
+<TryStep id="_6x7Q" name="Browser schließen">
+<WindowEventStep client="webClient" component="genericDocument" event="WINDOW_CLOSING" id="_6x7R"/>
+<TryStep id="_6x7S" name="Browser beendet?">
+<ProcessWaiter client="webClient" id="_6x7T" timeout="10000"/>
+<CatchSequence exception="ClientNotTerminatedException" id="_6x7U" maxerror="0">
+<TryStep id="_6x7V" name="Browser hart beenden">
+<ClientStopper client="webClient" id="_6x7W"/>
+<ProcessWaiter client="webClient" id="_6x7X" timeout="10000"/>
+<CatchSequence exception="TestException" id="_6x7Y" maxerror="0"/>
+</TryStep>
+</CatchSequence>
+</TryStep>
+<CatchSequence exception="TestException" id="_6x7Z" maxerror="0"/>
+</TryStep>
+</Procedure>
+</Package>
+<Package id="_6x5g" name="server">
+<comment>Contains procedures that helps managing the Jpro server. This package helps getting the "frontend" of your jpro application going. 
+
+In this context "jpro.server" referes to your jpro application running ontop of the jpro server.
+
+@author JPro
+@since 9.0.6</comment>
+<Dependency id="_6x6Q" name="running" reportname="Ensure JProServer is running">
+<variable name="dir">..</variable>
+<variable name="timeout"/>
+<variable name="command">./gradlew --no-daemon jproRun</variable>
+<SetupSequence id="_6x6i" name="starting">
+<variable name="expectedOutput">Server started at</variable>
+<IfSequence id="_b5h" test="&#34;$(variant)&#34;!=&#34;desktop&#34;">
+<ProcedureCall id="_6x6k" procedure="jpro.server.start" retvarname="qftestClientName">
+<variable name="dir">$(dir)</variable>
+<variable name="command">$(command)</variable>
+</ProcedureCall>
+<ProcedureCall id="_2YbQ" procedure="qfs.utils.waitForClientOutput">
+<variable name="client">$(qftestClientName)</variable>
+<variable name="expectedOutput">$(expectedOutput)</variable>
+<variable name="isRegex">true</variable>
+<variable name="timeout">$(timeout)</variable>
+<variable name="polling">1000</variable>
+</ProcedureCall>
+</IfSequence>
+</SetupSequence>
+<CleanupSequence id="_6x6m" name="stoping">
+<TryStep id="_6x6n">
+<ClientStopper client="JProServer" id="_6x6o"/>
+<ProcessWaiter client="JProServer" id="_2YTh" timeout="15000"/>
+</TryStep>
+</CleanupSequence>
+</Dependency>
+<Procedure id="_6x6T" name="start">
+<variable name="dir"/>
+<variable name="command"/>
+<comment>@param dir 		The relative or absolute path where the shell command should be run from.
+@param command	The command to execute in the shell.
+
+@return 		The qftest client name where this process is apearing in qftest</comment>
+<BasicSequence id="_6x6c" name="execute provided run command">
+<ClientWaiter client="JProServer" id="_6x7o" local="true" raise="false" resvarname="isSUTRunning" timeout="0"/>
+<IfSequence id="_6x7p" interpreter="groovy" test="!$(isSUTRunning)">
+<ShellClientStarter client="JProServer" command="$(command)" directory="$(dir)" id="_6x6h"/>
+</IfSequence>
+<ReturnStep cast="string" id="_6x6l" retval="JProServer"/>
+</BasicSequence>
+</Procedure>
+<Procedure id="_6wqP" name="waitForServer">
+<variable name="serverAddress"/>
+<variable name="timeoutWaitForServer">120000</variable>
+<comment>Waits for Server to be alive. It will try to reach the JProServer via a network request and wait for a positive response. 
+
+@param serverAddress		The URL / IP of the JProServer
+@param timeoutWaitForServer	Time in ms on how long try to reach the serverAddress endpoint</comment>
+<ServerScriptStep id="_6wqy" interpreter="groovy" name="Wait for Server $(url)">
+<code>int timeout = rc.getNum("timeoutWaitForServer")  // Default: 60 seconds in milliseconds
+int interval = 5000  // Check every 5 seconds
+long requestTimeout = 2000 // 2 seconds timeout for the HTTP request
+long startTime = System.currentTimeMillis()
+boolean responsePositive = false
+String urlString = rc.lookup("serverAddress") + "/status/alive"
+
+rc.logMessage("Testing the url: " + urlString);
+
+while (System.currentTimeMillis() - startTime &lt; timeout) {
+    try {
+        // Send HTTP request to check response
+        def url = new URL(urlString)
+        def connection = url.openConnection()
+        
+        connection.setConnectTimeout((int) requestTimeout) // Timeout for establishing the connection
+        connection.setReadTimeout((int) requestTimeout) 
+        
+        connection.setRequestMethod("GET")
+        int responseCode = connection.responseCode
+        
+        if (responseCode == 200) {  // Assuming HTTP 200 means a positive response
+            responsePositive = true
+            break
+        }
+    } catch (Exception e) {
+        // Catch any exception, e.g., if server is unreachable, and try again
+        rc.logMessage("Got error: '" + e.getMessage() + "' trying again.");
+        sleep(1000)
+    }
+    
+    // Wait for the interval before trying again
+    Thread.sleep(interval)
+}
+
+if (responsePositive) {
+    // Response was positive, perform desired action
+    rc.logMessage("Page responded positively after " + (System.currentTimeMillis() - startTime) + " milliseconds.")
+} else {
+    // Timeout reached without positive response
+    throw new TestException("Page did not respond positively within the timeout.")
+}</code>
+</ServerScriptStep>
+</Procedure>
+</Package>
 <Package id="_6wrN" name="internal">
+<comment>@author JPro
+@since 9.0.6</comment>
 <Procedure id="_6wqO" name="openBrowser">
-<variable name="url"/>
+<variable name="clientName"/>
+<variable name="browserURL"/>
+<variable name="serverAddress"/>
 <variable name="browser">auto</variable>
 <variable name="webmode">auto</variable>
 <variable name="timeoutWaitForServer">60000</variable>
+<comment>
+
+@param clientName		The QFTest clientname for this client instance.
+@param browserURL 		The URL that is used while opening the Browser
+@param serverAddress		The URL / IP of the JPRO endoint ( for endpoint alive check )
+@param browser		The browser kind
+@param webmode		In what mode we comunicate with the browser ( webdirver | cdpdriver ) 
+@param timeoutWaitForServer	Time in ms on how long the testscript should try to reach the serverAddress endpoint</comment>
 <ServerScriptStep id="_2Ybj" interpreter="groovy" name="Set default values">
 <code>def browser = rc.getStr("browser")
 def webmode = rc.getStr("webmode")
+def browserURL = rc.getStr("browserURL")
+def serverAddress = rc.getStr("serverAddress")
+
+if(serverAddress == "") {
+    throw new RuntimeException("Parameter serverAddress was not defined")
+}
+
 
 if(browser == "auto") {
     browser = "chrome"
@@ -28,23 +336,32 @@ if(webmode == "auto") {
         rc.setLocal("webmode", "cdpdriver")          
     }
 }
+
+if(browserURL == "auto" ) {
+    rc.setLocal("browserURL", serverAddress)
+}
+if(browserURL == "") {
+    throw new RuntimeException("Parameter browserURL was not defined")
+}
+
+
 </code>
 </ServerScriptStep>
 <LogMessageStep clientInfo="false" clientScreenshots="-1" dontcompact="false" errorlevel="1" id="_6wr9" report="false" screenshots="-1">
 <text>browser: $(browser), webdriver: $(webmode)</text>
 </LogMessageStep>
-<ProcedureCall id="_6wrT" procedure="waitForServer">
-<variable name="url">$(url)</variable>
+<ProcedureCall id="_6wrT" procedure="jpro.server.waitForServer">
+<variable name="serverAddress">$(serverAddress)</variable>
 <variable name="timeoutWaitForServer">$(timeoutWaitForServer)</variable>
 </ProcedureCall>
 <BasicSequence id="_3NC" name="Web-Engine starten">
-<BrowserClientStarter browser="$(browser)" client="webClient" connectionmode="${default:webmode:webdriver}" executable="${qftest:java}" id="_3ND"
+<BrowserClientStarter browser="$(browser)" client="$(clientName)" connectionmode="${default:webmode:webdriver}" executable="${qftest:java}" id="_3ND"
                       openwindow="false"/>
-<ClientWaiter client="webClient" id="_3NE"/>
+<ClientWaiter client="$(clientName)" id="_3NE"/>
 </BasicSequence>
 <BasicSequence id="_1pHV" name="Einstellungen für Browser setzen">
 <ProcedureCall id="_1pHW" procedure="qfs.web.browser.settings.doStartupSettings">
-<variable name="client">webClient</variable>
+<variable name="client">$(clientName)</variable>
 <variable name="browser">$(browser)</variable>
 <variable name="emptyCache">true</variable>
 <variable name="enableCookies">true</variable>
@@ -61,12 +378,12 @@ if(webmode == "auto") {
 </ProcedureCall>
 </BasicSequence>
 <BasicSequence id="_1pHX" name="Browserfenster öffnen">
-<BrowserClientStarter browser="${default:browser:chrome}" client="webClient" executable="${qftest:java}" height="900" id="_1pHY" openwindow="true"
-                      url="$(url)"/>
-<DocumentWaiter client="webClient" component="genericDocument" id="_1pHZ" timeout="60000"/>
+<BrowserClientStarter browser="${default:browser:chrome}" client="$(clientName)" executable="${qftest:java}" height="900" id="_1pHY" openwindow="true"
+                      url="$(browserURL)"/>
+<DocumentWaiter client="$(clientName)" component="genericDocument" id="_1pHZ" timeout="60000"/>
 </BasicSequence>
 <BasicSequence id="_1pHa" name="CustomWebResolver installieren">
-<InstallCWRStep client="webClient" engine="web" id="_2YPJ">
+<InstallCWRStep client="$(clientName)" engine="web" id="_2YPJ" name="">
 <code>ignoreTags:
 - DIV
 - SPAN
@@ -83,7 +400,7 @@ Für weitere Informationen und Beispiele wählen Sie "Was ist
 das?" im Kontextmenü des Knotens.</comment>
 </InstallCWRStep>
 </BasicSequence>
-<ReturnStep id="_6wrA" retval="webClient"/>
+<ReturnStep id="_6wrA" retval="$(clientName)"/>
 </Procedure>
 <Procedure id="_6" name="connectJProClient">
 <variable name="webClient"/>
@@ -205,148 +522,8 @@ rc.setOption(Options.OPT_PLAY_LINUX_FORCED_RAISE_WITH_TOPMOST, false)</code>
 </BasicSequence>
 </Procedure>
 </Package>
-<Procedure id="_6wqP" name="waitForServer">
-<variable name="url"/>
-<variable name="timeoutWaitForServer">60000</variable>
-<comment>Waits for Server to be alive.</comment>
-<ServerScriptStep id="_6wqy" interpreter="groovy" name="Wait for Server $(url)">
-<code>int timeout = rc.getNum("timeoutWaitForServer")  // Default: 60 seconds in milliseconds
-int interval = 5000  // Check every 5 seconds
-long requestTimeout = 2000 // 2 seconds timeout for the HTTP request
-long startTime = System.currentTimeMillis()
-boolean responsePositive = false
-String urlString = rc.lookup("url") + "/status/alive"
-
-rc.logMessage("Testing the url: " + urlString);
-
-while (System.currentTimeMillis() - startTime &lt; timeout) {
-    try {
-        // Send HTTP request to check response
-        def url = new URL(urlString)
-        def connection = url.openConnection()
-        
-        connection.setConnectTimeout((int) requestTimeout) // Timeout for establishing the connection
-        connection.setReadTimeout((int) requestTimeout) 
-        
-        connection.setRequestMethod("GET")
-        int responseCode = connection.responseCode
-        
-        if (responseCode == 200) {  // Assuming HTTP 200 means a positive response
-            responsePositive = true
-            break
-        }
-    } catch (Exception e) {
-        // Catch any exception, e.g., if server is unreachable, and try again
-        rc.logMessage("Got error: '" + e.getMessage() + "' trying again.");
-        sleep(1000)
-    }
-    
-    // Wait for the interval before trying again
-    Thread.sleep(interval)
-}
-
-if (responsePositive) {
-    // Response was positive, perform desired action
-    rc.logMessage("Page responded positively after " + (System.currentTimeMillis() - startTime) + " milliseconds.")
-} else {
-    // Timeout reached without positive response
-    throw new TestException("Page did not respond positively within the timeout.")
-}</code>
-</ServerScriptStep>
-</Procedure>
-<Procedure id="_6wrF" name="connectFXClient">
-<variable name="fxClient"/>
-<variable name="browser">auto</variable>
-<variable name="webmode">auto</variable>
-<variable name="url">fillout</variable>
-<variable name="variant">jpro</variable>
-<variable name="timeoutWaitForServer">60000</variable>
-<comment>variant can be either jpro or desktop</comment>
-<IfSequence id="_6wrL" test="&#34;$(variant)&#34;==&#34;web&#34;">
-<BasicSequence id="_6wrO" name="JPro">
-<ProcedureCall id="_6wqc" procedure="internal.openBrowser" retvarname="webClient">
-<variable name="url">$(url)</variable>
-<variable name="browser">$(browser)</variable>
-<variable name="webmode">$(webmode)</variable>
-<variable name="timeoutWaitForServer">$(timeoutWaitForServer)</variable>
-</ProcedureCall>
-<ProcedureCall id="_6wqR" procedure="internal.connectJProClient">
-<variable name="webClient">webClient</variable>
-</ProcedureCall>
-</BasicSequence>
-<ElseifSequence id="_6wrQ" test="&#34;$(variant)&#34;==&#34;desktop&#34;">
-<BasicSequence id="_6wrP" name="Desktop">
-<SetGlobalStep id="_6wrU" varname="client">
-<default>$(fxClient)</default>
-</SetGlobalStep>
-<ProcedureCall id="_2YXY" procedure="qfs.jib.options.replayFXHardMouseEventAs">
-<variable name="clicktype">hard</variable>
-</ProcedureCall>
-<ProcedureCall id="_2YXZ" procedure="qfs.jib.options.replayFXSoftMouseEventAs">
-<variable name="clicktype">semihard</variable>
-</ProcedureCall>
-<ReturnStep id="_6wrS" retval="$(fxClient)"/>
-</BasicSequence>
-</ElseifSequence>
-<ElseSequence id="_6wrM">
-<LogMessageStep clientInfo="true" clientScreenshots="-1" errorlevel="3" id="_6wrR" screenshots="-1">
-<text>Unknown variant $(variant)</text>
-</LogMessageStep>
-</ElseSequence>
-</IfSequence>
-</Procedure>
-<Procedure id="_6wrG" name="stopFXClient">
-<TryStep id="_2YOU" name="Verbindung zwischen Web und FX Clients lösen">
-<ClientWaiter client="$(client)" engine="fx" id="_2YOV" timeout="0"/>
-<ClientScriptStep client="$(client)" engine="fx" id="_2YOW">
-<code>from de.qfs.apps.qftest.client import Client
-Client.instance().setForeignPlayback(None)</code>
-</ClientScriptStep>
-<CatchSequence exception="ClientNotConnectedException" id="_2YOX" maxerror="0"/>
-</TryStep>
-<TryStep id="_2YS7" name="Browser schließen">
-<WindowEventStep client="webClient" component="genericDocument" event="WINDOW_CLOSING" id="_2YS8"/>
-<TryStep id="_2YS9" name="Browser beendet?">
-<ProcessWaiter client="webClient" id="_2YSB" timeout="10000"/>
-<CatchSequence exception="ClientNotTerminatedException" id="_2YSC" maxerror="0">
-<TryStep id="_2YSD" name="Browser hart beenden">
-<ClientStopper client="webClient" id="_2YSE"/>
-<ProcessWaiter client="webClient" id="_2YSF" timeout="10000"/>
-<CatchSequence exception="TestException" id="_2YSG" maxerror="0"/>
-</TryStep>
-</CatchSequence>
-</TryStep>
-<CatchSequence exception="TestException" id="_2YSH" maxerror="0"/>
-</TryStep>
-</Procedure>
+</Package>
 </PackageRoot>
-<ExtraSequence id="_4">
-<CommentStep id="_2YZi">
-<heading>Can we refer to the Data Table?</heading>
-</CommentStep>
-<TableDataBinder id="_2YZh" name="variants">
-<TableBinderColumn title="variant" width="137">
-<data>web</data>
-<data>web</data>
-<data>web</data>
-<data>web</data>
-<data>desktop</data>
-</TableBinderColumn>
-<TableBinderColumn title="browser" width="148">
-<data>chrome</data>
-<data>firefox</data>
-<data>edge</data>
-<data>safari</data>
-<data/>
-</TableBinderColumn>
-<TableBinderColumn title="os" width="556">
-<data>windows,linux,macos</data>
-<data>windows,linux</data>
-<data>windows</data>
-<data>macos</data>
-<data>windows,linux,macos</data>
-</TableBinderColumn>
-</TableDataBinder>
-</ExtraSequence>
+<ExtraSequence id="_4"/>
 <WindowList id="_5"/>
 </RootStep>
