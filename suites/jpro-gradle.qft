@@ -10,7 +10,7 @@
 <variable name="client">JProServer</variable>
 <variable name="variant">web</variable>
 <variable name="webmode">cdpdriver</variable>
-<TestSet id="_1" name="Base Test Group">
+<TestSet condition="rc.callProcedure(&#34;configureVariables&#34;)" id="_1" name="Base Test Group">
 <DependencyReference id="_6wsk" reference="dependencies.backend-running"/>
 <DataDriver id="_2YZg" loopreportname="Test: $(variant) $(browser) $(os)">
 <TableDataBinder id="_2YZh" name="variants">
@@ -75,6 +75,25 @@
 </TestSet>
 </TestSet>
 <PackageRoot id="_3">
+<Procedure id="_rCI" name="configureVariables">
+<comment>Determine if the specified os is the same as the os of the machine running the test.
+
+@param os - the operating system to check for
+@returns true if the specified os meets the running os, false otherwhise</comment>
+<ServerScriptStep id="_Cxo" interpreter="groovy">
+<code>
+rc.logMessage("is windows: " + rc.getBool("qftest","windows"));
+
+if (rc.getBool("qftest","windows")){
+    rc.setGlobal("commandWeb", "./gradlew.bat --no-daemon :jproRun")
+    rc.setGlobal("commandDesktop", "./gradlew.bat --no-daemon :run")
+} else {
+    rc.setGlobal("commandWeb", "./gradlew --no-daemon :jproRun")
+    rc.setGlobal("commandDesktop", "./gradlew --no-daemon :run")
+}</code>
+</ServerScriptStep>
+<ReturnStep cast="boolean" id="_act" retval="true"/>
+</Procedure>
 <Procedure id="_2Yba" name="runOnSystem">
 <variable name="os"/>
 <comment>Determine if the specified os is the same as the os of the machine running the test.
@@ -122,7 +141,7 @@ rc.setLocal("runOnSystem",runOnSystem)</code>
 <discriminator>variant</discriminator>
 <SetupSequence id="_kTj">
 <IfSequence id="_-Vz" test="&#34;$(variant)&#34;==&#34;desktop&#34;">
-<ShellClientStarter client="JProServer" command="./gradlew :run" directory=".." id="_6x6h"/>
+<ShellClientStarter client="JProServer" command="$(commandDesktop)" directory=".." id="_6x6h"/>
 <ClientWaiter client="JProServer" id="_3NE"/>
 </IfSequence>
 </SetupSequence>
@@ -178,7 +197,7 @@ rc.setLocal("runOnSystem",runOnSystem)</code>
 <DependencyReference id="_7" reference="jpro.server.running">
 <variable name="dir">../</variable>
 <variable name="timeout">500000</variable>
-<variable name="command">./gradlew --no-daemon :jproRun</variable>
+<variable name="command">$(commandWeb)</variable>
 <variable name="serverAddress">http://localhost:8080</variable>
 <variable name="browser">auto</variable>
 </DependencyReference>
