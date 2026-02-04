@@ -102,11 +102,10 @@ qftest {
     //baseUrl = "https://www.qfs.de/fileadmin/Webdata/pub/temp/31112/" // not used, if "versionDir" is specified
 
     version = "latest"
-    arguments = ["-license", "$projectDir/qftest.license"]
+    arguments = ["-license", "$projectDir/qftest.license", "-timeout", (1000 * 60 * 10).toString()]
     //license = "$projectDir/qflicense.license"
     //license = "product = qftest\n"
 
-    variables = ["webmode":"cdpdriver"]
     options = ["OPT_WEB_CDP_READ_TIMEOUT":10000]
 
     reportDir = "$projectDir/qftest"

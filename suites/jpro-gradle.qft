@@ -51,6 +51,7 @@
 </ProcedureCall>
 </BasicSequence>
 <MouseEventStep clicks="1" client="JProServer" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_6wqY" modifiers="16" x="26" y="19"/>
+<MouseEventStep clicks="1" client="JProServer" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_Vwr" modifiers="16" x="26" y="19"/>
 <MouseEventStep clicks="1" client="JProServer" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_6wqZ" modifiers="16"/>
 <CheckStringStep client="JProServer" component="#Label:name=label1" id="_6wqa">
 <text>Welcome to FXML and JPro!</text>
@@ -67,6 +68,7 @@
 </ProcedureCall>
 </BasicSequence>
 <MouseEventStep clicks="1" client="JProServer" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_2YXx" modifiers="16" x="26" y="19"/>
+<MouseEventStep clicks="1" client="JProServer" component="#Label:text=FXML" event="MOUSE_MPRC" hardevent="true" id="_Avi" modifiers="16" x="26" y="19"/>
 <MouseEventStep clicks="1" client="JProServer" component="#Button:" event="MOUSE_MPRC" hardevent="true" id="_2YXy" modifiers="16"/>
 <CheckStringStep client="JProServer" component="#Label:name=label1" id="_2YXz">
 <text>Welcome to FXML and JPro!</text>
@@ -85,8 +87,8 @@
 rc.logMessage("is windows: " + rc.getBool("qftest","windows"));
 
 if (rc.getBool("qftest","windows")){
-    rc.setGlobal("commandWeb", "./gradlew.bat --no-daemon :jproRun")
-    rc.setGlobal("commandDesktop", "./gradlew.bat --no-daemon :run")
+    rc.setGlobal("commandWeb", "gradlew.bat --no-daemon :jproRun")
+    rc.setGlobal("commandDesktop", "gradlew.bat --no-daemon :run")
 } else {
     rc.setGlobal("commandWeb", "./gradlew --no-daemon :jproRun")
     rc.setGlobal("commandDesktop", "./gradlew --no-daemon :run")
