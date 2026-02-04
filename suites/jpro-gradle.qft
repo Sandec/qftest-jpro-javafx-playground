@@ -85,8 +85,8 @@
 rc.logMessage("is windows: " + rc.getBool("qftest","windows"));
 
 if (rc.getBool("qftest","windows")){
-    rc.setGlobal("commandWeb", "./gradlew.bat --no-daemon :jproRun")
-    rc.setGlobal("commandDesktop", "./gradlew.bat --no-daemon :run")
+    rc.setGlobal("commandWeb", "gradlew.bat --no-daemon :jproRun")
+    rc.setGlobal("commandDesktop", "gradlew.bat --no-daemon :run")
 } else {
     rc.setGlobal("commandWeb", "./gradlew --no-daemon :jproRun")
     rc.setGlobal("commandDesktop", "./gradlew --no-daemon :run")
