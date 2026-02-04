@@ -421,9 +421,12 @@ for (int i = 0; i &lt; maxRetries; i++) {
     if(document == null) {
         document = rc.getComponent("genericDocument");
     }
-    if(document != null) {
-        def jproAppNode = document.getElementsByTagName("jpro-app")[0];
-        servername = jproAppNode ? jproAppNode.getAttributeJS("data-server-name") : "";   
+    if (document != null) {
+        def nodes = document.getElementsByTagName("jpro-app")  // Node[]
+        if (nodes != null &amp;&amp; nodes.length &gt; 0 &amp;&amp; nodes[0] != null) {
+            def value = nodes[0].getAttributeJS("data-server-name")
+            servername = value ?: ""
+        }
     }
     
     if (servername == null || servername.isEmpty()) {
@@ -513,7 +516,8 @@ rc.logMessage("FX client: %s, Web client: %s" % (fxClient, webClient))</code>
 <ClientScriptStep client="$(client)" engine="fx" id="_2YVt" interpreter="groovy" name="Spezielle interne Einstellungen für den FX Client">
 <code>rc.setOption(Options.OPT_FX_USE_AWT_ROBOT, false)
 rc.setOption(Options.OPT_PLAY_FORCED_RAISE_WITH_CONTROL, false)
-rc.setOption(Options.OPT_PLAY_LINUX_FORCED_RAISE_WITH_TOPMOST, false)</code>
+rc.setOption(Options.OPT_PLAY_LINUX_FORCED_RAISE_WITH_TOPMOST, false)
+rc.setOption(Options.OPT_JIB_REPLAY_FX_IMAGE_CHECK_AS, "web")</code>
 </ClientScriptStep>
 <ClientScriptStep client="$(webClient)" engine="web" id="_2YVu" interpreter="groovy" name="Spezielle interne Einstellungen für den Web Client">
 <code>rc.setOption(Options.OPT_JIB_RECORD_WEB_FILTER_JIB_COMPONENTS, true)
