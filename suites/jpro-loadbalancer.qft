@@ -44,17 +44,31 @@
 </TableBinderColumn>
 </TableDataBinder>
 <TableDataBinder id="_ORA" name="variants">
-<TableBinderColumn title="variant" width="226">
-<data>web</data>
-<data>web-remote-qftest</data>
-<data>web</data>
-<data>web-remote-qftest</data>
-<data>web</data>
-<data>web-remote-qftest</data>
-<data>web</data>
-<data>web-remote-qftest</data>
+<TableBinderColumn title="variant" width="193">
+<data>jpro-remote</data>
+<data>jpro</data>
 </TableBinderColumn>
-<TableBinderColumn title="browser" width="237">
+<TableBinderColumn title="browser" width="202">
+<data>chrome</data>
+<data>chrome</data>
+</TableBinderColumn>
+<TableBinderColumn title="os" width="485">
+<data>windows,linux,macos</data>
+<data>windows,linux,macos</data>
+</TableBinderColumn>
+</TableDataBinder>
+<TableDataBinder disabled="true" id="_rX+" name="variants">
+<TableBinderColumn title="variant" width="197">
+<data>jpro</data>
+<data>jpro-remote</data>
+<data>jpro</data>
+<data>jpro-remote</data>
+<data>jpro</data>
+<data>jpro-remote</data>
+<data>jpro</data>
+<data>jpro-remote</data>
+</TableBinderColumn>
+<TableBinderColumn title="browser" width="206">
 <data>chrome</data>
 <data>chrome</data>
 <data>safari</data>
@@ -64,7 +78,7 @@
 <data>edge</data>
 <data>edge</data>
 </TableBinderColumn>
-<TableBinderColumn title="os" width="571">
+<TableBinderColumn title="os" width="495">
 <data>windows,linux,macos</data>
 <data>windows,linux</data>
 <data>macos</data>
