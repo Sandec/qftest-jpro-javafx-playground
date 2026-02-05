@@ -132,8 +132,8 @@ In this context "jpro.client" referes to the "webbrowser" or "view" in wich your
 @param browser		The browser kind ( chrome, firefox, edge, safari )
 @param webmode		In what mode we comunicate with the browser ( webdirver | cdpdriver ) 
 @param timeoutWaitForServer	Time in ms on how long the testscript should try to reach the serverAddress endpoint
-@param qftestVariant		In what environement the FXClient is running ( default | remote-qftest)</comment>
-<IfSequence id="_6x6-" test="&#34;$(qftestVariant)&#34;==&#34;remote-qftest&#34;">
+@param qftestVariant		In what environement the FXClient is running ( default | jpro-remote)</comment>
+<IfSequence id="_6x6-" test="&#34;$(qftestVariant)&#34;==&#34;jpro-remote&#34;">
 <ServerScriptStep id="_6x74">
 <code>from de.qfs.apps.qftest.shared import Globals
 from urllib import urlencode
@@ -238,6 +238,11 @@ In this context "jpro.server" referes to your jpro application running ontop of 
 <ClientWaiter client="JProServer" id="_6x7o" local="true" raise="false" resvarname="isSUTRunning" timeout="0"/>
 <IfSequence id="_6x7p" interpreter="groovy" test="!$(isSUTRunning)">
 <ShellClientStarter client="JProServer" command="$(command)" directory="$(dir)" id="_6x6h"/>
+<ElseSequence id="_zJ1">
+<LogMessageStep clientInfo="false" clientScreenshots="-1" dontcompact="false" errorlevel="1" id="_bwH" report="false" screenshots="-1">
+<text>Client with name JProServer is already running.</text>
+</LogMessageStep>
+</ElseSequence>
 </IfSequence>
 <ReturnStep cast="string" id="_6x6l" retval="JProServer"/>
 </BasicSequence>
